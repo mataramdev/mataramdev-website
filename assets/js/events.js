@@ -20,7 +20,7 @@ export function update_event_status_labels() {
     if (!label) return;
 
     if (event_date < today) {
-      label.textContent = 'End';
+      label.setAttribute('data-i18n', 'event-status-ended');
       label.classList.add('ended');
       item.classList.add('ended');
 
@@ -30,7 +30,7 @@ export function update_event_status_labels() {
         rsvp_btn.setAttribute('disabled', 'true');
       }
     } else {
-      label.textContent = 'Upcoming';
+      label.setAttribute('data-i18n', 'event-status-upcoming');
       label.classList.add('upcoming');
     }
   });

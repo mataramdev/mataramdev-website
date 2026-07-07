@@ -34,8 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Fetch live data — after DB ready, re-run dependents
   await fetch_live_activities();
-  await fetch_live_events(() => {
+  await fetch_live_events(async () => {
     update_event_status_labels();
     bind_event_buttons();
+    // Translate dynamically loaded elements
+    const { get_lang, apply_language } = await import('./lang.js');
+    apply_language(get_lang());
   });
 });
