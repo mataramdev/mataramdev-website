@@ -48,7 +48,8 @@ export async function apply_language(lang) {
   if (btn) btn.textContent = lang === 'en' ? 'ID' : 'EN';
 
   try {
-    const res = await fetch(`/assets/lang/${lang}.json`);
+    const root = document.body.getAttribute('data-root-path') || './';
+    const res = await fetch(`${root}assets/lang/${lang}.json`);
     if (!res.ok) throw new Error('Translation JSON failed to fetch');
     translations = await res.json();
   } catch (err) {
@@ -59,12 +60,13 @@ export async function apply_language(lang) {
   // Apply to marked elements
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (!translations[key]) return;
+    const val = translations[key];
+    if (!val) return;
 
-    if (key === 'hero-title' || key === 'about-mission-text') {
-      el.innerHTML = translations[key];
+    if (val.includes('<') || val.includes('&')) {
+      el.innerHTML = val;
     } else {
-      el.textContent = translations[key];
+      el.textContent = val;
     }
   });
 

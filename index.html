@@ -66,7 +66,7 @@
     </style>
   </head>
 
-  <body>
+  <body data-root-path="./">
     <!-- ====== HEADER / NAVIGATION ====== -->
     <header class="header">
       <div class="container header-inner">
@@ -262,10 +262,10 @@
           </div>
           <div class="card">
             <div class="card-icon">🎓</div>
-            <h3 #data-i18n="act-bootcamp-title">
+            <h3 data-i18n="act-bootcamp-title">
               Course &amp; Language Center
             </h3>
-            <p #data-i18n="act-bootcamp-desc">
+            <p data-i18n="act-bootcamp-desc">
               We run tech courses and language classes for members who want
               to learn new skills. From web development to English & Japanese,
               we got you covered.
@@ -273,23 +273,23 @@
           </div>
           <div class="card">
             <div class="card-icon">🛠️</div>
-            <h3 #data-i18n="act-fun-title">Workshop</h3>
-            <p #data-i18n="act-fun-desc">
+            <h3 data-i18n="act-workshop-title">Workshop</h3>
+            <p data-i18n="act-workshop-desc">
               We organize hands-on workshops to help members develop practical skills in various technologies and tools.
             </p>
           </div>
           <div class="card">
             <div class="card-icon">📚</div>
-            <h3 #data-i18n="act-fun-title">Book Club</h3>
-            <p #data-i18n="act-fun-desc">
+            <h3 data-i18n="act-bookclub-title">Book Club</h3>
+            <p data-i18n="act-bookclub-desc">
               We also have a book club where members read and discuss books
               related to technology, personal development, and entrepreneurship.
             </p>
           </div>
           <div class="card">
             <div class="card-icon">🏆</div>
-            <h3 #data-i18n="act-fun-title">Competitions</h3>
-            <p #data-i18n="act-fun-desc">
+            <h3 data-i18n="act-competitions-title">Competitions</h3>
+            <p data-i18n="act-competitions-desc">
               We organize coding competitions and hackathons to challenge
               members to apply their skills, learn from each other, and win
               prizes.
@@ -298,7 +298,7 @@
           <div class="card">
             <div class="card-icon">🎮</div>
             <h3 data-i18n="act-fun-title">Fun &amp; Games</h3>
-            <p #data-i18n="act-fun-desc">
+            <p data-i18n="act-fun-desc">
               We also organize fun activities like game nights, quizes, and
               social events to keep the community spirit alive and strong.
             </p>
@@ -645,7 +645,7 @@
             <a href="#" class="footer-logo">
               <img src="./assets/images/logo-footer-dark.svg" alt="Mataram Dev Logo" />
             </a>
-            <p class="footer-tagline">
+            <p class="footer-tagline" data-i18n="footer-tagline">
               A community of makers, designers &amp; innovators based in
               Mataram, Lombok &ndash; Indonesia.
             </p>
@@ -679,37 +679,33 @@
 
           <!-- Explore col -->
           <div class="footer-nav-col">
-            <span class="footer-nav-heading">Explore</span>
-            <a href="#about">About</a>
-            <a href="#activities">Activities</a>
-            <a href="#events">Events</a>
-            <a href="#blog">Articles</a>
-            <a href="#members">Contributors</a>
+            <span class="footer-nav-heading" data-i18n="footer-heading-explore">Explore</span>
+            <a href="#about" data-i18n="nav-about">About</a>
+            <a href="#activities" data-i18n="nav-activities">Activities</a>
+            <a href="#events" data-i18n="nav-events">Events</a>
+            <a href="#blog" data-i18n="nav-blog">Articles</a>
+            <a href="#members" data-i18n="nav-contributors">Contributors</a>
           </div>
 
           <!-- Community col -->
           <div class="footer-nav-col">
-            <span class="footer-nav-heading">Community</span>
-            <a href="#join">Join Us</a>
-            <a href="https://github.com/mataramdevcom" target="_blank"
-              >Open Source</a
-            >
-            <a href="https://t.me/mataramdevcom" target="_blank"
-              >Telegram Group</a
-            >
-            <a href="https://wa.me/6287750765028" target="_blank">Chat on WA</a>
-            <a href="#events">Upcoming Events</a>
+            <span class="footer-nav-heading" data-i18n="footer-heading-community">Community</span>
+            <a href="#join" data-i18n="footer-join-us">Join Us</a>
+            <a href="https://github.com/mataramdevcom" target="_blank" data-i18n="footer-open-source">Open Source</a>
+            <a href="https://t.me/mataramdevcom" target="_blank" data-i18n="footer-tg-group">Telegram Group</a>
+            <a href="https://wa.me/6287750765028" target="_blank" data-i18n="footer-chat-wa">Chat on WA</a>
+            <a href="#events" data-i18n="footer-upcoming-events">Upcoming Events</a>
           </div>
 
           <!-- Find Us col -->
           <div class="footer-find-us">
-            <span class="footer-nav-heading">Find Us</span>
-            <p class="footer-find-item">
+            <span class="footer-nav-heading" data-i18n="footer-heading-findus">Find Us</span>
+            <p class="footer-find-item" data-i18n="footer-address">
               📍 Mataram, Lombok<br />West Nusa Tenggara,<br />Indonesia
             </p>
-            <p class="footer-find-item">💻 WFC &ndash; Every Wednesday</p>
-            <p class="footer-find-item">🎤 Meetup &ndash; Monthly</p>
-            <p class="footer-find-item">🚀 Open to all levels</p>
+            <p class="footer-find-item" data-i18n="footer-wfc">💻 WFC &ndash; Every Wednesday</p>
+            <p class="footer-find-item" data-i18n="footer-meetup">🎤 Meetup &ndash; Monthly</p>
+            <p class="footer-find-item" data-i18n="footer-open">🚀 Open to all levels</p>
             <div class="footer-map">
               <iframe
                 src="https://maps.google.com/maps?q=Mataram,+Nusa+Tenggara+Barat,+Indonesia&t=&z=14&ie=UTF8&iwloc=&output=embed"
@@ -719,13 +715,13 @@
                 referrerpolicy="no-referrer-when-downgrade"
               ></iframe>
             </div>
-            <a href="#join" class="footer-join-btn" id="footer-join-now"
+            <a href="#join" class="footer-join-btn" id="footer-join-now" data-i18n="footer-join-btn"
               >JOIN NOW &rarr;</a
             >
           </div>
         </div>
 
-        <div class="footer-bottom">
+        <div class="footer-bottom" data-i18n="footer-copyright">
           &copy; 2026 Mataram Dev &mdash; Made with ❤️ from Lombok.
         </div>
       </div>

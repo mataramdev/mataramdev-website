@@ -111,8 +111,8 @@ export async function fetch_live_events(on_done) {
         <p class="event-desc">${evt.description}</p>
       </div>
       <div class="event-actions">
-        <button class="btn btn-small btn-secondary event-details-btn" data-event-id="${evt.id}">Details</button>
-        <button class="btn btn-small btn-primary event-rsvp-btn"    data-event-id="${evt.id}">RSVP</button>
+        <button class="btn btn-small btn-secondary event-details-btn" data-event-id="${evt.id}" data-i18n="btn-details">Details</button>
+        <button class="btn btn-small btn-primary event-rsvp-btn"    data-event-id="${evt.id}" data-i18n="btn-rsvp">RSVP</button>
       </div>
     `;
     list.appendChild(article);

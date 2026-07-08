@@ -45,7 +45,7 @@
   </style>
 </head>
 
-<body>
+<body data-root-path="../">
 
   <!-- ====== HEADER / NAVIGATION ====== -->
   <header class="header">
@@ -81,14 +81,14 @@
   <section class="explore-page-hero">
     <div class="container">
       <div class="explore-breadcrumb">
-        <a href="../index.html">Home</a> &rsaquo; Explore
+        <a href="../index.html" data-i18n="nav-home">Home</a> &rsaquo; <span data-i18n="nav-join">Explore</span>
       </div>
-      <h1>Explore <span>Mataram Dev</span></h1>
-      <p>Everything we offer — organized by what matters to you.</p>
+      <h1 data-i18n="exp-hero-title">Explore <span>Mataram Dev</span></h1>
+      <p data-i18n="exp-hero-desc">Everything we offer — organized by what matters to you.</p>
       <nav class="explore-jump-nav" aria-label="Jump to section">
-        <a href="#community"  class="explore-nav-btn">🤝 Community</a>
-        <a href="#courses"    class="explore-nav-btn">🎓 Courses</a>
-        <a href="#partnership" class="explore-nav-btn">🌐 Partnership</a>
+        <a href="#community"  class="explore-nav-btn" data-i18n="exp-jump-community">🤝 Community</a>
+        <a href="#courses"    class="explore-nav-btn" data-i18n="exp-jump-courses">🎓 Courses</a>
+        <a href="#partnership" class="explore-nav-btn" data-i18n="exp-jump-partnership">🌐 Partnership</a>
       </nav>
     </div>
   </section>
@@ -100,10 +100,10 @@
       <div class="branch-header">
         <div class="branch-label">
           <span class="branch-icon">🤝</span>
-          <span class="branch-tag">Community</span>
+          <span class="branch-tag" data-i18n="exp-comm-tag">Community</span>
         </div>
-        <h2>Community</h2>
-        <p>Connect with makers, designers, and developers in Mataram. Contribute to open source, share knowledge, and build together.</p>
+        <h2 data-i18n="exp-comm-title">Community</h2>
+        <p data-i18n="exp-comm-desc">Connect with makers, designers, and developers in Mataram. Contribute to open source, share knowledge, and build together.</p>
       </div>
 
       <!-- Main community cards -->
@@ -111,76 +111,76 @@
 
         <a href="#members" class="explore-card">
           <div class="card-icon">👥</div>
-          <h3>Contributors</h3>
-          <p>Meet the makers and developers who are actively building Mataram Dev and its projects together.</p>
-          <span class="explore-card-cta">Meet the Team &rarr;</span>
+          <h3 data-i18n="exp-comm-contrib-title">Contributors</h3>
+          <p data-i18n="exp-comm-contrib-desc">Meet the makers and developers who are actively building Mataram Dev and its projects together.</p>
+          <span class="explore-card-cta" data-i18n="exp-comm-contrib-cta">Meet the Team &rarr;</span>
         </a>
 
         <a href="#projects" class="explore-card">
           <div class="card-icon">🚀</div>
-          <h3>Projects</h3>
-          <p>Open source projects born inside the community. Join an existing one or bring your own idea.</p>
-          <span class="explore-card-cta">View Projects &rarr;</span>
+          <h3 data-i18n="exp-comm-proj-title">Projects</h3>
+          <p data-i18n="exp-comm-proj-desc">Open source projects born inside the community. Join an existing one or bring your own idea.</p>
+          <span class="explore-card-cta" data-i18n="exp-comm-proj-cta">View Projects &rarr;</span>
         </a>
 
         <a href="#resources" class="explore-card">
           <div class="card-icon">📚</div>
-          <h3>Resources</h3>
-          <p>Curated roadmaps, free courses, guides, and tools — hand-picked by the community for the community.</p>
-          <span class="explore-card-cta">Browse Resources &rarr;</span>
+          <h3 data-i18n="exp-comm-res-title">Resources</h3>
+          <p data-i18n="exp-comm-res-desc">Curated roadmaps, free courses, guides, and tools — hand-picked by the community for the community.</p>
+          <span class="explore-card-cta" data-i18n="exp-comm-res-cta">Browse Resources &rarr;</span>
         </a>
 
         <div class="explore-card explore-card--soon">
-          <span class="explore-soon-badge">Soon</span>
+          <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
           <div class="card-icon">💬</div>
-          <h3>Forum</h3>
-          <p>Ask questions, get feedback, share progress, and stay connected between our weekly sessions.</p>
+          <h3 data-i18n="exp-comm-forum-title">Forum</h3>
+          <p data-i18n="exp-comm-forum-desc">Ask questions, get feedback, share progress, and stay connected between our weekly sessions.</p>
         </div>
 
       </div>
 
       <!-- Contacts subsection -->
       <div class="explore-subsection">
-        <h3 class="explore-subsection-title">📡 Contacts</h3>
+        <h3 class="explore-subsection-title" data-i18n="exp-contacts-title">📡 Contacts</h3>
         <div class="contacts-grid">
 
           <a href="https://instagram.com/mataramdev" target="_blank" rel="noopener" class="contact-card">
             <span class="contact-card-icon">📱</span>
             <div class="contact-card-info">
-              <h4>Social Media</h4>
-              <p>Follow us on Instagram, Twitter &amp; more</p>
+              <h4 data-i18n="exp-contact-social-title">Social Media</h4>
+              <p data-i18n="exp-contact-social-desc">Follow us on Instagram, Twitter &amp; more</p>
             </div>
           </a>
 
           <a href="mailto:hello@mataramdev.org" class="contact-card">
             <span class="contact-card-icon">📧</span>
             <div class="contact-card-info">
-              <h4>Inquiry</h4>
-              <p>hello@mataramdev.org</p>
+              <h4 data-i18n="exp-contact-inquiry-title">Inquiry</h4>
+              <p data-i18n="exp-contact-inquiry-desc">hello@mataramdev.org</p>
             </div>
           </a>
 
           <a href="https://youtube.com/@mataramdev" target="_blank" rel="noopener" class="contact-card">
             <span class="contact-card-icon">▶️</span>
             <div class="contact-card-info">
-              <h4>Channel</h4>
-              <p>Watch talks &amp; past sessions on YouTube</p>
+              <h4 data-i18n="exp-contact-channel-title">Channel</h4>
+              <p data-i18n="exp-contact-channel-desc">Watch talks &amp; past sessions on YouTube</p>
             </div>
           </a>
 
           <a href="https://t.me/mataramdevcom" target="_blank" rel="noopener" class="contact-card">
             <span class="contact-card-icon">✈️</span>
             <div class="contact-card-info">
-              <h4>Telegram</h4>
-              <p>Join the Telegram community group</p>
+              <h4 data-i18n="exp-contact-tg-title">Telegram</h4>
+              <p data-i18n="exp-contact-tg-desc">Join the Telegram community group</p>
             </div>
           </a>
 
           <a href="https://wa.me/6287750765028" target="_blank" rel="noopener" class="contact-card">
             <span class="contact-card-icon">💬</span>
             <div class="contact-card-info">
-              <h4>WhatsApp</h4>
-              <p>Chat with us directly on WhatsApp</p>
+              <h4 data-i18n="exp-contact-wa-title">WhatsApp</h4>
+              <p data-i18n="exp-contact-wa-desc">Chat with us directly on WhatsApp</p>
             </div>
           </a>
 
@@ -197,50 +197,50 @@
       <div class="branch-header">
         <div class="branch-label">
           <span class="branch-icon">🎓</span>
-          <span class="branch-tag">Courses</span>
+          <span class="branch-tag" data-i18n="exp-courses-tag">Courses</span>
         </div>
-        <h2>Courses</h2>
-        <p>Grow your skills with community-led programs — from technical tracks to language fluency. All beginner-friendly, guided by community mentors.</p>
+        <h2 data-i18n="exp-courses-title">Courses</h2>
+        <p data-i18n="exp-courses-desc">Grow your skills with community-led programs — from technical tracks to language fluency. All beginner-friendly, guided by community mentors.</p>
       </div>
 
       <!-- Tech Skill subsection -->
       <div class="explore-subsection">
-        <h3 class="explore-subsection-title">💻 Tech Skill</h3>
+        <h3 class="explore-subsection-title" data-i18n="exp-tech-title">💻 Tech Skill</h3>
         <div class="cards-grid explore-cards-grid">
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🔐</div>
-            <h3>Cybersecurity</h3>
-            <p>Network defense, ethical hacking basics, and digital forensics fundamentals.</p>
+            <h3 data-i18n="exp-tech-cyber-title">Cybersecurity</h3>
+            <p data-i18n="exp-tech-cyber-desc">Network defense, ethical hacking basics, and digital forensics fundamentals.</p>
           </div>
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🌐</div>
-            <h3>FSWE</h3>
-            <p>Fullstack Web Engineering — from HTML to backend APIs and cloud deployment.</p>
+            <h3 data-i18n="exp-tech-fswe-title">FSWE</h3>
+            <p data-i18n="exp-tech-fswe-desc">Fullstack Web Engineering — from HTML to backend APIs and cloud deployment.</p>
           </div>
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🤖</div>
-            <h3>AI / ML</h3>
-            <p>Machine learning concepts, Python, and hands-on project experience with real data.</p>
+            <h3 data-i18n="exp-tech-aiml-title">AI / ML</h3>
+            <p data-i18n="exp-tech-aiml-desc">Machine learning concepts, Python, and hands-on project experience with real data.</p>
           </div>
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">📋</div>
-            <h3>Project Mgmt</h3>
-            <p>Agile, Scrum, and effective team & product management for tech projects.</p>
+            <h3 data-i18n="exp-tech-pm-title">Project Mgmt</h3>
+            <p data-i18n="exp-tech-pm-desc">Agile, Scrum, and effective team & product management for tech projects.</p>
           </div>
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🎨</div>
-            <h3>Design &amp; Multimedia</h3>
-            <p>UI/UX design principles, visual storytelling, and digital content creation.</p>
+            <h3 data-i18n="exp-tech-design-title">Design &amp; Multimedia</h3>
+            <p data-i18n="exp-tech-design-desc">UI/UX design principles, visual storytelling, and digital content creation.</p>
           </div>
 
         </div>
@@ -248,28 +248,28 @@
 
       <!-- Language Center subsection -->
       <div class="explore-subsection">
-        <h3 class="explore-subsection-title">🌏 Language Center</h3>
+        <h3 class="explore-subsection-title" data-i18n="exp-lang-title">🌏 Language Center</h3>
         <div class="cards-grid explore-cards-grid">
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🇬🇧</div>
-            <h3>English</h3>
-            <p>Conversational and professional English for the global tech industry. Covers writing, speaking, and technical vocabulary.</p>
+            <h3 data-i18n="exp-lang-en-title">English</h3>
+            <p data-i18n="exp-lang-en-desc">Conversational and professional English for the global tech industry. Covers writing, speaking, and technical vocabulary.</p>
           </div>
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🇯🇵</div>
-            <h3>Japanese</h3>
-            <p>Basic to intermediate Japanese, including tech and business vocabulary for Japanese-market careers.</p>
+            <h3 data-i18n="exp-lang-jp-title">Japanese</h3>
+            <p data-i18n="exp-lang-jp-desc">Basic to intermediate Japanese, including tech and business vocabulary for Japanese-market careers.</p>
           </div>
 
           <div class="explore-card explore-card--soon">
-            <span class="explore-soon-badge">Soon</span>
+            <span class="explore-soon-badge" data-i18n="exp-soon">Soon</span>
             <div class="card-icon">🇸🇦</div>
-            <h3>Arabic</h3>
-            <p>Modern Standard Arabic and conversational fundamentals for professional and cultural fluency.</p>
+            <h3 data-i18n="exp-lang-ar-title">Arabic</h3>
+            <p data-i18n="exp-lang-ar-desc">Modern Standard Arabic and conversational fundamentals for professional and cultural fluency.</p>
           </div>
 
         </div>
@@ -277,8 +277,8 @@
 
       <!-- Course interest CTA -->
       <div class="explore-cta-row">
-        <p>Interested in teaching or designing a course?</p>
-        <a href="mailto:hello@mataramdev.org" class="btn btn-outline">Reach Out &rarr;</a>
+        <p data-i18n="exp-courses-cta-text">Interested in teaching or designing a course?</p>
+        <a href="mailto:hello@mataramdev.org" class="btn btn-outline" data-i18n="exp-courses-cta-btn">Reach Out &rarr;</a>
       </div>
 
     </div>
@@ -291,40 +291,40 @@
       <div class="branch-header">
         <div class="branch-label">
           <span class="branch-icon">🌐</span>
-          <span class="branch-tag">Partnership</span>
+          <span class="branch-tag" data-i18n="exp-partner-tag">Partnership</span>
         </div>
-        <h2>Partnership</h2>
-        <p>We collaborate with communities, businesses, NGOs, and universities across Indonesia to create meaningful impact through technology.</p>
+        <h2 data-i18n="exp-partner-title">Partnership</h2>
+        <p data-i18n="exp-partner-desc">We collaborate with communities, businesses, NGOs, and universities across Indonesia to create meaningful impact through technology.</p>
       </div>
 
       <div class="cards-grid explore-cards-grid">
 
         <a href="mailto:hello@mataramdev.org" class="explore-card">
           <div class="card-icon">🏘️</div>
-          <h3>Communities</h3>
-          <p>Join a growing network of tech communities across Indonesia. Cross-promote events, share speakers, and co-host programs.</p>
-          <span class="explore-card-cta">Connect &rarr;</span>
+          <h3 data-i18n="exp-partner-comm-title">Communities</h3>
+          <p data-i18n="exp-partner-comm-desc">Join a growing network of tech communities across Indonesia. Cross-promote events, share speakers, and co-host programs.</p>
+          <span class="explore-card-cta" data-i18n="exp-partner-comm-cta">Connect &rarr;</span>
         </a>
 
         <a href="mailto:hello@mataramdev.org" class="explore-card">
           <div class="card-icon">💼</div>
-          <h3>Business</h3>
-          <p>Corporate sponsorships, product demos, hiring pipelines, and brand exposure within the Lombok tech ecosystem.</p>
-          <span class="explore-card-cta">Partner &rarr;</span>
+          <h3 data-i18n="exp-partner-biz-title">Business</h3>
+          <p data-i18n="exp-partner-biz-desc">Corporate sponsorships, product demos, hiring pipelines, and brand exposure within the Lombok tech ecosystem.</p>
+          <span class="explore-card-cta" data-i18n="exp-partner-biz-cta">Partner &rarr;</span>
         </a>
 
         <a href="mailto:hello@mataramdev.org" class="explore-card">
           <div class="card-icon">🌱</div>
-          <h3>NGO</h3>
-          <p>Social impact collaborations and community-driven tech programs that serve underrepresented groups in NTB.</p>
-          <span class="explore-card-cta">Collaborate &rarr;</span>
+          <h3 data-i18n="exp-partner-ngo-title">NGO</h3>
+          <p data-i18n="exp-partner-ngo-desc">Social impact collaborations and community-driven tech programs that serve underrepresented groups in NTB.</p>
+          <span class="explore-card-cta" data-i18n="exp-partner-ngo-cta">Collaborate &rarr;</span>
         </a>
 
         <a href="mailto:hello@mataramdev.org" class="explore-card">
           <div class="card-icon">🏛️</div>
-          <h3>Universities</h3>
-          <p>Campus club support, research collaborations, internship pipelines, and student-facing tech programs.</p>
-          <span class="explore-card-cta">Apply &rarr;</span>
+          <h3 data-i18n="exp-partner-univ-title">Universities</h3>
+          <p data-i18n="exp-partner-univ-desc">Campus club support, research collaborations, internship pipelines, and student-facing tech programs.</p>
+          <span class="explore-card-cta" data-i18n="exp-partner-univ-cta">Apply &rarr;</span>
         </a>
 
       </div>

@@ -13,7 +13,8 @@ export const BACK_TO_TOP_THRESHOLD = 300;
  */
 export async function load_env() {
   try {
-    const response = await fetch('/.env');
+    const root = document.body.getAttribute('data-root-path') || './';
+    const response = await fetch(`${root}.env`);
     if (!response.ok) throw new Error('Failed to load .env');
 
     const text = await response.text();
