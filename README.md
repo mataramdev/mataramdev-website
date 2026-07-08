@@ -1,7 +1,7 @@
-# <img src="assets/images/logo-dark.svg" width=250> Mataram Dev Community Profile
+# <img src="assets/images/logo-dark.svg" width="125" style="vertical-align: middle;" /> Mataram Dev Community Profile
 
 ## 🛠️ Built on HTML, CSS, JS and BITCoder AI Assistant
-
+>
 <p align="center">
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
