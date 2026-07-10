@@ -1,780 +1,630 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- ====== PRIMARY META ====== -->
-    <title>Mataram Dev</title>
-    <meta
-      name="description"
-      content="Mataram Dev is a community of makers, designers & innovators based in Mataram, Lombok, Indonesia. Join weekly sessions, share knowledge, and build real projects together."
-    />
-    <meta
-      name="keywords"
-      content="Mataram Dev, komunitas developer, tech community Lombok, belajar coding, web development, Mataram, Indonesia"
-    />
-    <meta name="author" content="Mataram Dev" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://mataramdev.org/" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- ====== FAVICON ====== -->
-    <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg" />
-    <link rel="shortcut icon" href="./assets/images/logo.svg" />
-    <meta name="theme-color" content="#10B981" />
+  <!-- ====== PRIMARY META ====== -->
+  <title>Mataram Dev</title>
+  <meta name="description"
+    content="Mataram Dev is a community of makers, designers & innovators based in Mataram, Lombok, Indonesia. Join weekly sessions, share knowledge, and build real projects together." />
+  <meta name="keywords"
+    content="Mataram Dev, komunitas developer, tech community Lombok, belajar coding, web development, Mataram, Indonesia" />
+  <meta name="author" content="Mataram Dev" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://mataramdev.org/" />
 
-    <!-- ====== OPEN GRAPH (Facebook / LinkedIn / WhatsApp) ====== -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://mataramdev.org/" />
-    <meta
-      property="og:title"
-      content="Mataram Dev — Tech Community in Mataram, Lombok"
-    />
-    <meta
-      property="og:description"
-      content="Mataram Dev is a growing community of tech enthusiasts — from students to professional developers — who meet regularly to share knowledge, build projects, and support each other."
-    />
-    <meta
-      property="og:image"
-      content="https://mataramdev.org/assets/images/fotobareng.webp"
-    />
-    <meta property="og:locale" content="id_ID" />
-    <meta property="og:locale:alternate" content="en_US" />
-    <meta property="og:site_name" content="Mataram Dev" />
+  <!-- ====== FAVICON ====== -->
+  <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg" />
+  <link rel="shortcut icon" href="./assets/images/logo.svg" />
+  <meta name="theme-color" content="#10B981" />
 
-    <!-- ====== TWITTER CARD ====== -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@mataramdev" />
-    <meta
-      name="twitter:title"
-      content="Mataram Dev — Tech Community in Mataram, Lombok"
-    />
-    <meta
-      name="twitter:description"
-      content="A community of makers, designers & innovators based in Mataram, Lombok. Join us!"
-    />
-    <meta
-      name="twitter:image"
-      content="https://mataramdev.org/assets/images/fotobareng.webp"
-    />
+  <!-- ====== OPEN GRAPH (Facebook / LinkedIn / WhatsApp) ====== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mataramdev.org/" />
+  <meta property="og:title" content="Mataram Dev — Tech Community in Mataram, Lombok" />
+  <meta property="og:description"
+    content="Mataram Dev is a growing community of tech enthusiasts — from students to professional developers — who meet regularly to share knowledge, build projects, and support each other." />
+  <meta property="og:image" content="https://mataramdev.org/assets/images/fotobareng.webp" />
+  <meta property="og:locale" content="id_ID" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:site_name" content="Mataram Dev" />
 
-    <!-- ====== STYLES ====== -->
-    <meta name="color-scheme" content="light dark" />
-    <link rel="stylesheet" href="./assets/css/style.css" />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&display=swap");
-    </style>
-  </head>
+  <!-- ====== TWITTER CARD ====== -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@mataramdev" />
+  <meta name="twitter:title" content="Mataram Dev — Tech Community in Mataram, Lombok" />
+  <meta name="twitter:description"
+    content="A community of makers, designers & innovators based in Mataram, Lombok. Join us!" />
+  <meta name="twitter:image" content="https://mataramdev.org/assets/images/fotobareng.webp" />
 
-  <body data-root-path="./">
-    <!-- ====== HEADER / NAVIGATION ====== -->
-    <header class="header">
-      <div class="container header-inner">
-        <div class="logo-container">
-          <a href="#" class="logo" aria-label="Mataram Dev Logo">
-            <img src="./assets/images/logo-header.svg" alt="Mataram Dev Logo" />
-          </a>
-        </div>
-        <nav class="nav" id="nav">
-          <ul>
-            <li><a href="#" data-i18n="nav-home">Home</a></li>
-            <li><a href="#about" data-i18n="nav-about">About</a></li>
+  <!-- ====== STYLES ====== -->
+  <meta name="color-scheme" content="light dark" />
+  <link rel="stylesheet" href="./assets/css/style.css" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&display=swap");
+  </style>
+  <link rel="preload" href="./assets/images/fotobareng.webp" as="image">
+</head>
+
+<body data-root-path="./">
+  <!-- ====== HEADER / NAVIGATION ====== -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo-container">
+        <a href="#" class="logo" aria-label="Mataram Dev Logo">
+          <img src="./assets/images/logo-header.svg" alt="Mataram Dev Logo" />
+        </a>
+      </div>
+      <nav class="nav" id="nav">
+        <ul>
+          <li><a href="#" data-i18n="nav-home">Home</a></li>
+          <li><a href="#about" data-i18n="nav-about">About</a></li>
+          <li>
+            <a href="#activities" data-i18n="nav-activities">Activities</a>
+          </li>
+          <li><a href="#blog" data-i18n="nav-blog">Blog</a></li>
+          <li><a href="#events" data-i18n="nav-events">Events</a></li>
+          <li>
+            <a href="./explore/" class="btn btn-small" data-i18n="nav-join">Explore ↗</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="header-controls">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+          <img src="./assets/images/dark-mode.svg" alt="Toggle Theme" loading="lazy" />
+        </button>
+        <button class="lang-toggle" id="langToggle" aria-label="Toggle Language">
+          ID
+        </button>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="container hero-content">
+      <h1 data-i18n="hero-title">Learn<br />& Grow Together.</h1>
+      <p data-i18n="hero-desc">
+        Mataram Dev is a community of makers, designers &amp; innovators based
+        in Mataram, Lombok - Indonesia.
+      </p>
+      <div class="hero-actions">
+        <a href="#join" class="btn btn-primary" data-i18n="hero-join">Join Now</a>
+        <a href="#events" class="btn btn-outline" data-i18n="hero-events">View Events</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== ABOUT ====== -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2 class="section-title" data-i18n="about-title">About Community</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p data-i18n="about-p1">
+            We started as a small group of friends who wanted to learn coding
+            together. Now we’re a growing community of tech enthusiasts — from
+            high college students to professional developers — who meet
+            regularly to share knowledge, build projects, and support each
+            other.
+          </p>
+          <p>
+            <strong data-i18n="about-mission-label">Our mission:</strong><span data-i18n="about-mission-text">
+              Make a place where anyone can start their journey and grow as a
+              professional in technology, whatever their background and
+              experience.</span>
+          </p>
+          <ul class="about-stats">
             <li>
-              <a href="#activities" data-i18n="nav-activities">Activities</a>
+              <strong>100+</strong>
+              <span data-i18n="about-members-stat">Members</span>
             </li>
-            <li><a href="#blog" data-i18n="nav-blog">Blog</a></li>
-            <li><a href="#events" data-i18n="nav-events">Events</a></li>
             <li>
-              <a href="./explore/" class="btn btn-small" data-i18n="nav-join"
-                >Explore ↗</a
-              >
+              <strong>1</strong>
+              <span data-i18n="about-meetups-stat">Meetups Held</span>
+            </li>
+            <li>
+              <strong>2</strong>
+              <span data-i18n="about-projects-stat">Projects Launched</span>
             </li>
           </ul>
-        </nav>
-        <div class="header-controls">
-          <button
-            class="theme-toggle"
-            id="themeToggle"
-            aria-label="Toggle Theme"
-          >
-            <img src="./assets/images/dark-mode.svg" alt="Toggle Theme" />
-          </button>
-          <button
-            class="lang-toggle"
-            id="langToggle"
-            aria-label="Toggle Language"
-          >
-            ID
-          </button>
         </div>
-        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
-          ☰
-        </button>
-      </div>
-    </header>
-
-    <!-- ====== HERO ====== -->
-    <section class="hero">
-      <div class="container hero-content">
-        <h1 data-i18n="hero-title">Learn<br />& Grow Together.</h1>
-        <p data-i18n="hero-desc">
-          Mataram Dev is a community of makers, designers &amp; innovators based
-          in Mataram, Lombok - Indonesia.
-        </p>
-        <div class="hero-actions">
-          <a href="#join" class="btn btn-primary" data-i18n="hero-join"
-            >Join Now</a
-          >
-          <a href="#events" class="btn btn-outline" data-i18n="hero-events"
-            >View Events</a
-          >
-        </div>
-      </div>
-    </section>
-
-    <!-- ====== ABOUT ====== -->
-    <section id="about" class="section">
-      <div class="container">
-        <h2 class="section-title" data-i18n="about-title">About Community</h2>
-        <div class="about-grid">
-          <div class="about-text">
-            <p data-i18n="about-p1">
-              We started as a small group of friends who wanted to learn coding
-              together. Now we’re a growing community of tech enthusiasts — from
-              high college students to professional developers — who meet
-              regularly to share knowledge, build projects, and support each
-              other.
-            </p>
-            <p>
-              <strong data-i18n="about-mission-label">Our mission:</strong
-              ><span data-i18n="about-mission-text">
-                Make a place where anyone can start their journey and grow as a
-                professional in technology, whatever their background and
-                experience.</span
-              >
-            </p>
-            <ul class="about-stats">
-              <li>
-                <strong>100+</strong>
-                <span data-i18n="about-members-stat">Members</span>
-              </li>
-              <li>
-                <strong>1</strong>
-                <span data-i18n="about-meetups-stat">Meetups Held</span>
-              </li>
-              <li>
-                <strong>2</strong>
-                <span data-i18n="about-projects-stat">Projects Launched</span>
-              </li>
-            </ul>
-          </div>
-          <div class="about-image">
-            <div class="slider" id="aboutSlider">
-              <div class="slides">
-                <!-- Ganti background-image dengan src foto asli nanti -->
-                <div class="slide active">
-                  <span class="slide-label">Meetup #1</span>
-                  <img src="./assets/images/fotobareng.webp" alt="Meetup #1" />
-                </div>
-                <div class="slide">
-                  <span class="slide-label">Meetup #1</span>
-                  <img
-                    src="./assets/images/fotobareng-2.webp"
-                    alt="Meetup #1"
-                  />
-                </div>
-                <div class="slide">
-                  <span class="slide-label">WFC 💻</span>
-                  <img src="./assets/images/wfc3.webp" alt="WFC" />
-                </div>
-                <div class="slide">
-                  <span class="slide-label">WFC 💻</span>
-                  <img src="./assets/images/wfc4.webp" alt="WFC" />
-                </div>
-                <div class="slide">
-                  <span class="slide-label">Sharing Session</span>
-                  <img
-                    src="./assets/images/sharing-session.webp"
-                    alt="Sharing Session"
-                  />
-                </div>
-                <div class="slide">
-                  <span class="slide-label">Sharing Session </span>
-                  <img src="./assets/images/wfc11.webp" alt="Sharing Session" />
-                </div>
-                <div class="slide">
-                  <span class="slide-label">Language Center </span>
-                  <img
-                    src="./assets/images/japanese1.webp"
-                    alt="Language Center"
-                  />
-                </div>
+        <div class="about-image">
+          <div class="slider" id="aboutSlider">
+            <div class="slides">
+              <!-- Ganti background-image dengan src foto asli nanti -->
+              <div class="slide active">
+                <span class="slide-label">Meetup #1</span>
+                <img src="./assets/images/fotobareng.webp" alt="Meetup #1" />
               </div>
-
-              <!-- Tombol navigasi -->
-              <button class="slider-btn slider-prev" aria-label="Previous">
-                ‹
-              </button>
-              <button class="slider-btn slider-next" aria-label="Next">
-                ›
-              </button>
-
-              <!-- Indikator dot -->
-              <div class="slider-dots"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====== ACTIVITIES ====== -->
-    <section id="activities" class="section section-alt">
-      <div class="container">
-        <h2 class="section-title" data-i18n="activities-title">
-          Our Activities
-        </h2>
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-icon">💻</div>
-            <h3 data-i18n="act-wfc-title">WFC (<em>Work From Cafe</em>)</h3>
-            <p data-i18n="act-wfc-desc">
-              Every Wednesday we gather to work on open-source or personal
-              projects, solve coding challenges, or just learn something new
-              together while enjoying a cup of coffee.
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🎤</div>
-            <h3 data-i18n="act-meetup-title">Meetup &amp; Sharing Sessions</h3>
-            <p data-i18n="act-meetup-desc">
-              Monthly meetups where members share their experiences and
-              knowledge in a relaxed environment, build networks, and connect
-              with like-minded individuals from all acrross backgrounds.
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🚀</div>
-            <h3 data-i18n="act-colab-title">Project Colab</h3>
-            <p data-i18n="act-colab-desc">
-              Got an idea? Find teammates here. We regularly kick off small
-              group projects so everyone can build a real portofolio (Check Our
-              Github).
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🎓</div>
-            <h3 data-i18n="act-bootcamp-title">Course &amp; Language Center</h3>
-            <p data-i18n="act-bootcamp-desc">
-              We run tech courses and language classes for members who want to
-              learn new skills. From web development to English & Japanese, we
-              got you covered.
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🛠️</div>
-            <h3 data-i18n="act-workshop-title">Workshop</h3>
-            <p data-i18n="act-workshop-desc">
-              We organize hands-on workshops to help members develop practical
-              skills in various technologies and tools.
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">📚</div>
-            <h3 data-i18n="act-bookclub-title">Book Club</h3>
-            <p data-i18n="act-bookclub-desc">
-              We also have a book club where members read and discuss books
-              related to technology, personal development, and entrepreneurship.
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🏆</div>
-            <h3 data-i18n="act-competitions-title">Competitions</h3>
-            <p data-i18n="act-competitions-desc">
-              We organize coding competitions and hackathons to challenge
-              members to apply their skills, learn from each other, and win
-              prizes.
-            </p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🎮</div>
-            <h3 data-i18n="act-fun-title">Fun &amp; Games</h3>
-            <p data-i18n="act-fun-desc">
-              We also organize fun activities like game nights, quizes, and
-              social events to keep the community spirit alive and strong.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====== BLOG ====== -->
-    <section id="blog" class="section section-alt">
-      <div class="container">
-        <h2 class="section-title" data-i18n="blog-title">Articles</h2>
-
-        <div class="blog-grid">
-          <article class="blog-card">
-            <div class="blog-thumb">
-              <img src="./assets/images/wfc3.webp" alt="Belajar Bareng" />
-              <span class="blog-tag" data-i18n="blog-tag-tutorial"
-                >Tutorial</span
-              >
-            </div>
-            <div class="blog-body">
-              <h3 data-i18n="blog1-title">
-                Mulai Belajar Web Development Bareng Komunitas
-              </h3>
-              <p class="blog-excerpt" data-i18n="blog1-desc">
-                Pengalaman belajar coding dari nol sampai bisa bikin website
-                sendiri — dan bagaimana komunitas membantu di setiap langkah.
-              </p>
-              <div class="blog-meta">
-                <span class="blog-author">Fandi</span>
-                <span class="blog-date">12 Jun 2026</span>
+              <div class="slide">
+                <span class="slide-label">Meetup #1</span>
+                <img src="./assets/images/fotobareng-2.webp" alt="Meetup #1" loading="lazy" />
               </div>
-              <a href="#" class="blog-readmore" data-i18n="blog-read-more"
-                >Read More →</a
-              >
-            </div>
-          </article>
-
-          <article class="blog-card">
-            <div class="blog-thumb">
-              <img src="./assets/images/wfc11.webp" alt="WFC" />
-              <span class="blog-tag" data-i18n="blog-tag-tips">Tips</span>
-            </div>
-            <div class="blog-body">
-              <h3 data-i18n="blog2-title">
-                Work From Cafe: Tips Produktif Coding di Co-working Space
-              </h3>
-              <p class="blog-excerpt" data-i18n="blog2-desc">
-                Dari pemilihan colokan sampai aturan sopan santun — panduan
-                lengkap work-from-cafe untuk developer.
-              </p>
-              <div class="blog-meta">
-                <span class="blog-author">Anto</span>
-                <span class="blog-date">8 Jun 2026</span>
+              <div class="slide">
+                <span class="slide-label">WFC 💻</span>
+                <img src="./assets/images/wfc3.webp" alt="WFC" loading="lazy" />
               </div>
-              <a href="#" class="blog-readmore" data-i18n="blog-read-more"
-                >Read More →</a
-              >
-            </div>
-          </article>
-
-          <article class="blog-card">
-            <div class="blog-thumb">
-              <img
-                src="./assets/images/sharing-session.webp"
-                alt="Sharing Session"
-              />
-              <span class="blog-tag" data-i18n="blog-tag-event">Event</span>
-            </div>
-            <div class="blog-body">
-              <h3 data-i18n="blog3-title">
-                Recap: Sharing Session AI &amp; Machine Learning
-              </h3>
-              <p class="blog-excerpt" data-i18n="blog3-desc">
-                Seru-seruan belajar AI bareng anggota komunitas. Dari konsep
-                dasar sampai praktik pakai TensorFlow.
-              </p>
-              <div class="blog-meta">
-                <span class="blog-author">Dimas</span>
-                <span class="blog-date">1 Jun 2026</span>
+              <div class="slide">
+                <span class="slide-label">WFC 💻</span>
+                <img src="./assets/images/wfc4.webp" alt="WFC" loading="lazy" />
               </div>
-              <a href="#" class="blog-readmore" data-i18n="blog-read-more"
-                >Read More →</a
-              >
-            </div>
-          </article>
-
-          <article class="blog-card">
-            <div class="blog-thumb">
-              <img src="./assets/images/fotobareng.webp" alt="Meetup" />
-              <span class="blog-tag" data-i18n="blog-tag-story">Story</span>
-            </div>
-            <div class="blog-body">
-              <h3 data-i18n="blog4-title">
-                Dari WhatsApp Group ke Komunitas Teknologi
-              </h3>
-              <p class="blog-excerpt" data-i18n="blog4-desc">
-                Cerita awal mula Mataram Dev — dari obrolan iseng di grup kecil
-                jadi komunitas yang ngumpul tiap minggu.
-              </p>
-              <div class="blog-meta">
-                <span class="blog-author">Maulana</span>
-                <span class="blog-date">25 Mei 2026</span>
+              <div class="slide">
+                <span class="slide-label">Sharing Session</span>
+                <img src="./assets/images/sharing-session.webp" alt="Sharing Session" loading="lazy" />
               </div>
-              <a href="#" class="blog-readmore" data-i18n="blog-read-more"
-                >Read More →</a
-              >
-            </div>
-          </article>
-        </div>
-
-        <p class="text-center" style="margin-top: 2rem">
-          <a href="#" class="btn btn-outline" data-i18n="blog-see-all"
-            >See All Articles</a
-          >
-        </p>
-      </div>
-    </section>
-
-    <!-- ====== EVENTS ====== -->
-    <section id="events" class="section">
-      <div class="container">
-        <h2 class="section-title" data-i18n="events-title">Events</h2>
-
-        <div class="event-list">
-          <!-- Selesai -->
-          <article class="event-item" data-date="2026-06-14">
-            <div class="event-date">
-              <span class="event-day">11</span>
-              <span class="event-month">Apr</span>
-            </div>
-            <div class="event-info">
-              <div class="event-info-header">
-                <h3>Meetup #1</h3>
-                <span class="event-label"></span>
+              <div class="slide">
+                <span class="slide-label">Sharing Session </span>
+                <img src="./assets/images/wfc11.webp" alt="Sharing Session" loading="lazy" />
               </div>
-              <p class="event-meta" data-event-meta="meetup-1">
-                📍 APRA College, Mataram • 09:00 WITA • 3 hours
-              </p>
-              <p class="event-desc" data-i18n="evt-meetup1-desc">
-                First official meetup of Mataram Dev: Members shared their
-                coding journey, learned from each other, build connections, and
-                discussed future projects.
-              </p>
-            </div>
-            <div class="event-actions">
-              <button
-                class="btn btn-small btn-secondary event-details-btn"
-                data-event-id="meetup-1"
-                data-i18n="btn-details"
-              >
-                Details
-              </button>
-              <button
-                class="btn btn-small btn-primary event-rsvp-btn"
-                data-event-id="meetup-1"
-                data-i18n="btn-rsvp"
-              >
-                RSVP
-              </button>
-            </div>
-          </article>
-
-          <!-- Akan datang -->
-          <article class="event-item" data-date="2026-06-28">
-            <div class="event-date">
-              <span class="event-day">28</span>
-              <span class="event-month">Jun</span>
-            </div>
-            <div class="event-info">
-              <div class="event-info-header">
-                <h3>Intro to Tailwind CSS</h3>
-                <span class="event-label"></span>
+              <div class="slide">
+                <span class="slide-label">Language Center </span>
+                <img src="./assets/images/japanese1.webp" alt="Language Center" loading="lazy" />
               </div>
-              <p class="event-meta" data-event-meta="tailwind-workshop">
-                📍 Online • 15:00 WITA • 2 hours
-              </p>
-              <p class="event-desc" data-i18n="evt-tailwind-desc">
-                Hands-on workshop: build a landing page from scratch using
-                Tailwind CSS. No previous CSS experience needed.
-              </p>
             </div>
-            <div class="event-actions">
-              <button
-                class="btn btn-small btn-secondary event-details-btn"
-                data-event-id="tailwind-workshop"
-                data-i18n="btn-details"
-              >
-                Details
-              </button>
-              <button
-                class="btn btn-small btn-primary event-rsvp-btn"
-                data-event-id="tailwind-workshop"
-                data-i18n="btn-rsvp"
-              >
-                RSVP
-              </button>
-            </div>
-          </article>
 
-          <article class="event-item" data-date="2026-07-12">
-            <div class="event-date">
-              <span class="event-day">12</span>
-              <span class="event-month">Jul</span>
-            </div>
-            <div class="event-info">
-              <div class="event-info-header">
-                <h3>Open Source Night</h3>
-                <span class="event-label"></span>
-              </div>
-              <p class="event-meta" data-event-meta="opensource-night">
-                📍 Co-working Space, Mataram • 18:00 WITA
-              </p>
-              <p class="event-desc" data-i18n="evt-opensource-desc">
-                Bring your laptop and contribute to an open-source project
-                together. Beginners very welcome — we’ll help you make your
-                first PR.
-              </p>
-            </div>
-            <div class="event-actions">
-              <button
-                class="btn btn-small btn-secondary event-details-btn"
-                data-event-id="opensource-night"
-                data-i18n="btn-details"
-              >
-                Details
-              </button>
-              <button
-                class="btn btn-small btn-primary event-rsvp-btn"
-                data-event-id="opensource-night"
-                data-i18n="btn-rsvp"
-              >
-                RSVP
-              </button>
-            </div>
-          </article>
+            <!-- Tombol navigasi -->
+            <button class="slider-btn slider-prev" aria-label="Previous">
+              ‹
+            </button>
+            <button class="slider-btn slider-next" aria-label="Next">
+              ›
+            </button>
 
-          <article class="event-item" data-date="2026-07-26">
-            <div class="event-date">
-              <span class="event-day">26</span>
-              <span class="event-month">Jul</span>
-            </div>
-            <div class="event-info">
-              <div class="event-info-header">
-                <h3>Mini Hackathon: Build for Lombok</h3>
-                <span class="event-label"></span>
-              </div>
-              <p class="event-meta" data-event-meta="hackathon">
-                📍 TBD • 09:00 — 17:00 WITA
-              </p>
-              <p class="event-desc" data-i18n="evt-hackathon-desc">
-                24-hour hackathon building apps that solve local problems. Teams
-                of 3-4. Prizes for top 3 teams!
-              </p>
-            </div>
-            <div class="event-actions">
-              <button
-                class="btn btn-small btn-secondary event-details-btn"
-                data-event-id="hackathon"
-                data-i18n="btn-details"
-              >
-                Details
-              </button>
-              <button
-                class="btn btn-small btn-primary event-rsvp-btn"
-                data-event-id="hackathon"
-                data-i18n="btn-rsvp"
-              >
-                RSVP
-              </button>
-            </div>
-          </article>
-        </div>
-
-        <p class="text-center" style="margin-top: 2rem">
-          <a href="#" class="btn btn-outline" data-i18n="events-see-all"
-            >See All Events</a
-          >
-        </p>
-      </div>
-    </section>
-
-    <!-- ====== JOIN ====== -->
-    <section id="join" class="section section-alt">
-      <div class="container join-section">
-        <h2 class="section-title" data-i18n="join-title">Join the Community</h2>
-        <p
-          class="text-center"
-          style="max-width: 560px; margin: 0 auto 2rem"
-          data-i18n="join-desc"
-        >
-          Fill out the form below or chat with us on WhatsApp. All levels are
-          welcome, from beginners to professionals.
-        </p>
-        <form class="join-form" id="joinForm">
-          <div class="form-row">
-            <input type="text" id="joinName" placeholder="Full Name" required />
-            <input type="email" id="joinEmail" placeholder="Email" required />
+            <!-- Indikator dot -->
+            <div class="slider-dots"></div>
           </div>
-          <div class="form-row">
-            <input
-              type="text"
-              id="joinInterest"
-              placeholder="Interest Area (e.g. Web, Mobile, AI)"
-            />
-            <input
-              type="text"
-              id="joinLevel"
-              placeholder="Level (Beginner / Intermediate / Advanced)"
-            />
-          </div>
-          <textarea
-            rows="3"
-            id="joinMessage"
-            placeholder="Message or expectations for the community (optional)"
-          ></textarea>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            style="width: 100%"
-            data-i18n="join-btn"
-          >
-            Submit &nbsp;Join
-          </button>
-        </form>
-        <p class="text-center" style="margin-top: 1rem; font-size: 0.9rem">
-          <span data-i18n="join-or">Or chat with us on</span>
-          <a href="https://wa.me/6287750765028" target="_blank">WhatsApp</a>
-          •
-          <a href="https://t.me/mataramdevcom" target="_blank">Telegram</a>
-          •
-          <a href="https://github.com/mataramdevcom" target="_blank">GitHub</a>
-        </p>
-      </div>
-    </section>
-
-    <!-- ====== FOOTER ====== -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-inner">
-          <!-- Brand col -->
-          <div class="footer-brand">
-            <a href="#" class="footer-logo">
-              <img
-                src="./assets/images/logo-footer-dark.svg"
-                alt="Mataram Dev Logo"
-              />
-            </a>
-            <p class="footer-tagline" data-i18n="footer-tagline">
-              A community of makers, designers &amp; innovators based in
-              Mataram, Lombok &ndash; Indonesia.
-            </p>
-            <div class="footer-social-btns">
-              <a
-                href="https://wa.me/6287750765028"
-                target="_blank"
-                class="footer-social-btn"
-                id="footer-wa"
-              >
-                <span class="btn-emoji">💬</span> WhatsApp
-              </a>
-              <a
-                href="https://t.me/mataramdevcom"
-                target="_blank"
-                class="footer-social-btn"
-                id="footer-tg"
-              >
-                <span class="btn-emoji">✈️</span> Telegram
-              </a>
-              <a
-                href="https://github.com/mataramdevcom"
-                target="_blank"
-                class="footer-social-btn"
-                id="footer-gh"
-              >
-                <span class="btn-emoji">🦊</span> GitHub
-              </a>
-            </div>
-          </div>
-
-          <!-- Explore col -->
-          <div class="footer-nav-col">
-            <span class="footer-nav-heading" data-i18n="footer-heading-explore"
-              >Home</span
-            >
-            <a href="#about" data-i18n="nav-about">About</a>
-            <a href="#activities" data-i18n="nav-activities">Activities</a>
-            <a href="#events" data-i18n="nav-events">Events</a>
-            <a href="#blog" data-i18n="nav-blog">Articles</a>
-          </div>
-
-          <!-- Community col -->
-          <div class="footer-nav-col">
-            <span
-              class="footer-nav-heading"
-              data-i18n="footer-heading-community"
-              >Community</span
-            >
-            <a href="#members" data-i18n="nav-contributors">Contributors</a>
-            <a href="#members" data-i18n="nav-projects">Projects</a>
-            <a
-              href="https://github.com/mataramdevcom"
-              target="_blank"
-              data-i18n="footer-open-source"
-              >Resources</a
-            >
-            <a
-              href="https://github.com/mataramdevcom"
-              target="_blank"
-              data-i18n="footer-open-source"
-              >Forum</a
-            >
-            <a href="#join" data-i18n="footer-join-us">Join Us</a>
-          </div>
-
-          <!-- Find Us col -->
-          <div class="footer-find-us">
-            <span class="footer-nav-heading" data-i18n="footer-heading-findus"
-              >Find Us</span
-            >
-            <p class="footer-find-item" data-i18n="footer-address">
-              📍 Mataram, Lombok<br />West Nusa Tenggara,<br />Indonesia
-            </p>
-            <p class="footer-find-item" data-i18n="footer-wfc">
-              💻 WFC &ndash; Every Wednesday
-            </p>
-            <p class="footer-find-item" data-i18n="footer-meetup">
-              🎤 Meetup &ndash; Monthly
-            </p>
-            <p class="footer-find-item" data-i18n="footer-open">
-              🚀 Open to all levels
-            </p>
-            <div class="footer-map">
-              <iframe
-                src="https://maps.google.com/maps?q=Mataram,+Nusa+Tenggara+Barat,+Indonesia&t=&z=14&ie=UTF8&iwloc=&output=embed"
-                title="Mataram Dev location — Mataram, Lombok"
-                loading="lazy"
-                allowfullscreen
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-            <a
-              href="#join"
-              class="footer-join-btn"
-              id="footer-join-now"
-              data-i18n="footer-join-btn"
-              >JOIN NOW &rarr;</a
-            >
-          </div>
-        </div>
-
-        <div class="footer-bottom" data-i18n="footer-copyright">
-          &copy; 2026 Mataram Dev &mdash; Made with ❤️ from Lombok.
-        </div>
-      </div>
-    </footer>
-
-    <!-- ====== BACK TO TOP ====== -->
-    <button id="backToTop" class="back-to-top" aria-label="Back to top">
-      ↑
-    </button>
-
-    <!-- ====== MODAL (EVENT DETAILS / RSVP) ====== -->
-    <div id="eventModal" class="modal">
-      <div class="modal-overlay" id="modalOverlay"></div>
-      <div class="modal-content">
-        <button class="modal-close" id="modalClose" aria-label="Close modal">
-          &times;
-        </button>
-        <div id="modalBody">
-          <!-- Dynamically populated -->
         </div>
       </div>
     </div>
+  </section>
 
-    <script type="module" src="./assets/js/main.js"></script>
-  </body>
+  <!-- ====== ACTIVITIES ====== -->
+  <section id="activities" class="section section-alt">
+    <div class="container">
+      <h2 class="section-title" data-i18n="activities-title">
+        Our Activities
+      </h2>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon">💻</div>
+          <h3 data-i18n="act-wfc-title">WFC (<em>Work From Cafe</em>)</h3>
+          <p data-i18n="act-wfc-desc">
+            Every Wednesday we gather to work on open-source or personal
+            projects, solve coding challenges, or just learn something new
+            together while enjoying a cup of coffee.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎤</div>
+          <h3 data-i18n="act-meetup-title">Meetup &amp; Sharing Sessions</h3>
+          <p data-i18n="act-meetup-desc">
+            Monthly meetups where members share their experiences and
+            knowledge in a relaxed environment, build networks, and connect
+            with like-minded individuals from all acrross backgrounds.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚀</div>
+          <h3 data-i18n="act-colab-title">Project Colab</h3>
+          <p data-i18n="act-colab-desc">
+            Got an idea? Find teammates here. We regularly kick off small
+            group projects so everyone can build a real portofolio (Check Our
+            Github).
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎓</div>
+          <h3 data-i18n="act-bootcamp-title">Course &amp; Language Center</h3>
+          <p data-i18n="act-bootcamp-desc">
+            We run tech courses and language classes for members who want to
+            learn new skills. From web development to English & Japanese, we
+            got you covered.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛠️</div>
+          <h3 data-i18n="act-workshop-title">Workshop</h3>
+          <p data-i18n="act-workshop-desc">
+            We organize hands-on workshops to help members develop practical
+            skills in various technologies and tools.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📚</div>
+          <h3 data-i18n="act-bookclub-title">Book Club</h3>
+          <p data-i18n="act-bookclub-desc">
+            We also have a book club where members read and discuss books
+            related to technology, personal development, and entrepreneurship.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏆</div>
+          <h3 data-i18n="act-competitions-title">Competitions</h3>
+          <p data-i18n="act-competitions-desc">
+            We organize coding competitions and hackathons to challenge
+            members to apply their skills, learn from each other, and win
+            prizes.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎮</div>
+          <h3 data-i18n="act-fun-title">Fun &amp; Games</h3>
+          <p data-i18n="act-fun-desc">
+            We also organize fun activities like game nights, quizes, and
+            social events to keep the community spirit alive and strong.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== BLOG ====== -->
+  <section id="blog" class="section section-alt">
+    <div class="container">
+      <h2 class="section-title" data-i18n="blog-title">Articles</h2>
+
+      <div class="blog-grid">
+        <article class="blog-card">
+          <div class="blog-thumb">
+            <img src="./assets/images/wfc3.webp" alt="Belajar Bareng" loading="lazy" />
+            <span class="blog-tag" data-i18n="blog-tag-tutorial">Tutorial</span>
+          </div>
+          <div class="blog-body">
+            <h3 data-i18n="blog1-title">
+              Mulai Belajar Web Development Bareng Komunitas
+            </h3>
+            <p class="blog-excerpt" data-i18n="blog1-desc">
+              Pengalaman belajar coding dari nol sampai bisa bikin website
+              sendiri — dan bagaimana komunitas membantu di setiap langkah.
+            </p>
+            <div class="blog-meta">
+              <span class="blog-author">Fandi</span>
+              <span class="blog-date">12 Jun 2026</span>
+            </div>
+            <a href="#" class="blog-readmore" data-i18n="blog-read-more">Read More →</a>
+          </div>
+        </article>
+
+        <article class="blog-card">
+          <div class="blog-thumb">
+            <img src="./assets/images/wfc11.webp" alt="WFC" loading="lazy" />
+            <span class="blog-tag" data-i18n="blog-tag-tips">Tips</span>
+          </div>
+          <div class="blog-body">
+            <h3 data-i18n="blog2-title">
+              Work From Cafe: Tips Produktif Coding di Co-working Space
+            </h3>
+            <p class="blog-excerpt" data-i18n="blog2-desc">
+              Dari pemilihan colokan sampai aturan sopan santun — panduan
+              lengkap work-from-cafe untuk developer.
+            </p>
+            <div class="blog-meta">
+              <span class="blog-author">Anto</span>
+              <span class="blog-date">8 Jun 2026</span>
+            </div>
+            <a href="#" class="blog-readmore" data-i18n="blog-read-more">Read More →</a>
+          </div>
+        </article>
+
+        <article class="blog-card">
+          <div class="blog-thumb">
+            <img src="./assets/images/sharing-session.webp" alt="Sharing Session" loading="lazy" />
+            <span class="blog-tag" data-i18n="blog-tag-event">Event</span>
+          </div>
+          <div class="blog-body">
+            <h3 data-i18n="blog3-title">
+              Recap: Sharing Session AI &amp; Machine Learning
+            </h3>
+            <p class="blog-excerpt" data-i18n="blog3-desc">
+              Seru-seruan belajar AI bareng anggota komunitas. Dari konsep
+              dasar sampai praktik pakai TensorFlow.
+            </p>
+            <div class="blog-meta">
+              <span class="blog-author">Dimas</span>
+              <span class="blog-date">1 Jun 2026</span>
+            </div>
+            <a href="#" class="blog-readmore" data-i18n="blog-read-more">Read More →</a>
+          </div>
+        </article>
+
+        <article class="blog-card">
+          <div class="blog-thumb">
+            <img src="./assets/images/fotobareng.webp" alt="Meetup" loading="lazy" />
+            <span class="blog-tag" data-i18n="blog-tag-story">Story</span>
+          </div>
+          <div class="blog-body">
+            <h3 data-i18n="blog4-title">
+              Dari WhatsApp Group ke Komunitas Teknologi
+            </h3>
+            <p class="blog-excerpt" data-i18n="blog4-desc">
+              Cerita awal mula Mataram Dev — dari obrolan iseng di grup kecil
+              jadi komunitas yang ngumpul tiap minggu.
+            </p>
+            <div class="blog-meta">
+              <span class="blog-author">Maulana</span>
+              <span class="blog-date">25 Mei 2026</span>
+            </div>
+            <a href="#" class="blog-readmore" data-i18n="blog-read-more">Read More →</a>
+          </div>
+        </article>
+      </div>
+
+      <p class="text-center" style="margin-top: 2rem">
+        <a href="#" class="btn btn-outline" data-i18n="blog-see-all">See All Articles</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== EVENTS ====== -->
+  <section id="events" class="section">
+    <div class="container">
+      <h2 class="section-title" data-i18n="events-title">Events</h2>
+
+      <div class="event-list">
+        <!-- Selesai -->
+        <article class="event-item" data-date="2026-06-14">
+          <div class="event-date">
+            <span class="event-day">11</span>
+            <span class="event-month">Apr</span>
+          </div>
+          <div class="event-info">
+            <div class="event-info-header">
+              <h3>Meetup #1</h3>
+              <span class="event-label"></span>
+            </div>
+            <p class="event-meta" data-event-meta="meetup-1">
+              📍 APRA College, Mataram • 09:00 WITA • 3 hours
+            </p>
+            <p class="event-desc" data-i18n="evt-meetup1-desc">
+              First official meetup of Mataram Dev: Members shared their
+              coding journey, learned from each other, build connections, and
+              discussed future projects.
+            </p>
+          </div>
+          <div class="event-actions">
+            <button class="btn btn-small btn-secondary event-details-btn" data-event-id="meetup-1"
+              data-i18n="btn-details">
+              Details
+            </button>
+            <button class="btn btn-small btn-primary event-rsvp-btn" data-event-id="meetup-1" data-i18n="btn-rsvp">
+              RSVP
+            </button>
+          </div>
+        </article>
+
+        <!-- Akan datang -->
+        <article class="event-item" data-date="2026-06-28">
+          <div class="event-date">
+            <span class="event-day">28</span>
+            <span class="event-month">Jun</span>
+          </div>
+          <div class="event-info">
+            <div class="event-info-header">
+              <h3>Intro to Tailwind CSS</h3>
+              <span class="event-label"></span>
+            </div>
+            <p class="event-meta" data-event-meta="tailwind-workshop">
+              📍 Online • 15:00 WITA • 2 hours
+            </p>
+            <p class="event-desc" data-i18n="evt-tailwind-desc">
+              Hands-on workshop: build a landing page from scratch using
+              Tailwind CSS. No previous CSS experience needed.
+            </p>
+          </div>
+          <div class="event-actions">
+            <button class="btn btn-small btn-secondary event-details-btn" data-event-id="tailwind-workshop"
+              data-i18n="btn-details">
+              Details
+            </button>
+            <button class="btn btn-small btn-primary event-rsvp-btn" data-event-id="tailwind-workshop"
+              data-i18n="btn-rsvp">
+              RSVP
+            </button>
+          </div>
+        </article>
+
+        <article class="event-item" data-date="2026-07-12">
+          <div class="event-date">
+            <span class="event-day">12</span>
+            <span class="event-month">Jul</span>
+          </div>
+          <div class="event-info">
+            <div class="event-info-header">
+              <h3>Open Source Night</h3>
+              <span class="event-label"></span>
+            </div>
+            <p class="event-meta" data-event-meta="opensource-night">
+              📍 Co-working Space, Mataram • 18:00 WITA
+            </p>
+            <p class="event-desc" data-i18n="evt-opensource-desc">
+              Bring your laptop and contribute to an open-source project
+              together. Beginners very welcome — we’ll help you make your
+              first PR.
+            </p>
+          </div>
+          <div class="event-actions">
+            <button class="btn btn-small btn-secondary event-details-btn" data-event-id="opensource-night"
+              data-i18n="btn-details">
+              Details
+            </button>
+            <button class="btn btn-small btn-primary event-rsvp-btn" data-event-id="opensource-night"
+              data-i18n="btn-rsvp">
+              RSVP
+            </button>
+          </div>
+        </article>
+
+        <article class="event-item" data-date="2026-07-26">
+          <div class="event-date">
+            <span class="event-day">26</span>
+            <span class="event-month">Jul</span>
+          </div>
+          <div class="event-info">
+            <div class="event-info-header">
+              <h3>Mini Hackathon: Build for Lombok</h3>
+              <span class="event-label"></span>
+            </div>
+            <p class="event-meta" data-event-meta="hackathon">
+              📍 TBD • 09:00 — 17:00 WITA
+            </p>
+            <p class="event-desc" data-i18n="evt-hackathon-desc">
+              24-hour hackathon building apps that solve local problems. Teams
+              of 3-4. Prizes for top 3 teams!
+            </p>
+          </div>
+          <div class="event-actions">
+            <button class="btn btn-small btn-secondary event-details-btn" data-event-id="hackathon"
+              data-i18n="btn-details">
+              Details
+            </button>
+            <button class="btn btn-small btn-primary event-rsvp-btn" data-event-id="hackathon" data-i18n="btn-rsvp">
+              RSVP
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <p class="text-center" style="margin-top: 2rem">
+        <a href="#" class="btn btn-outline" data-i18n="events-see-all">See All Events</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== JOIN ====== -->
+  <section id="join" class="section section-alt">
+    <div class="container join-section">
+      <h2 class="section-title" data-i18n="join-title">Join the Community</h2>
+      <p class="text-center" style="max-width: 560px; margin: 0 auto 2rem" data-i18n="join-desc">
+        Fill out the form below or chat with us on WhatsApp. All levels are
+        welcome, from beginners to professionals.
+      </p>
+      <form class="join-form" id="joinForm">
+        <div class="form-row">
+          <input type="text" id="joinName" placeholder="Full Name" required />
+          <input type="email" id="joinEmail" placeholder="Email" required />
+        </div>
+        <div class="form-row">
+          <input type="text" id="joinInterest" placeholder="Interest Area (e.g. Web, Mobile, AI)" />
+          <input type="text" id="joinLevel" placeholder="Level (Beginner / Intermediate / Advanced)" />
+        </div>
+        <textarea rows="3" id="joinMessage"
+          placeholder="Message or expectations for the community (optional)"></textarea>
+        <button type="submit" class="btn btn-primary" style="width: 100%" data-i18n="join-btn">
+          Submit &nbsp;Join
+        </button>
+      </form>
+      <p class="text-center" style="margin-top: 1rem; font-size: 0.9rem">
+        <span data-i18n="join-or">Or chat with us on</span>
+        <a href="https://wa.me/6287750765028" target="_blank">WhatsApp</a>
+        •
+        <a href="https://t.me/mataramdevcom" target="_blank">Telegram</a>
+        •
+        <a href="https://github.com/mataramdevcom" target="_blank">GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <!-- Brand col -->
+        <div class="footer-brand">
+          <a href="#" class="footer-logo">
+            <img src="./assets/images/logo-footer-dark.svg" alt="Mataram Dev Logo" loading="lazy" />
+          </a>
+          <p class="footer-tagline" data-i18n="footer-tagline">
+            A community of makers, designers &amp; innovators based in
+            Mataram, Lombok &ndash; Indonesia.
+          </p>
+          <div class="footer-social-btns">
+            <a href="https://wa.me/6287750765028" target="_blank" class="footer-social-btn" id="footer-wa">
+              <span class="btn-emoji">💬</span> WhatsApp
+            </a>
+            <a href="https://t.me/mataramdevcom" target="_blank" class="footer-social-btn" id="footer-tg">
+              <span class="btn-emoji">✈️</span> Telegram
+            </a>
+            <a href="https://github.com/mataramdevcom" target="_blank" class="footer-social-btn" id="footer-gh">
+              <span class="btn-emoji">🦊</span> GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Explore col -->
+        <div class="footer-nav-col">
+          <span class="footer-nav-heading" data-i18n="footer-heading-explore">Home</span>
+          <a href="#about" data-i18n="nav-about">About</a>
+          <a href="#activities" data-i18n="nav-activities">Activities</a>
+          <a href="#events" data-i18n="nav-events">Events</a>
+          <a href="#blog" data-i18n="nav-blog">Articles</a>
+        </div>
+
+        <!-- Community col -->
+        <div class="footer-nav-col">
+          <span class="footer-nav-heading" data-i18n="footer-heading-community">Community</span>
+          <a href="#members" data-i18n="nav-contributors">Contributors</a>
+          <a href="#members" data-i18n="nav-projects">Projects</a>
+          <a href="https://github.com/mataramdevcom" target="_blank" data-i18n="footer-open-source">Resources</a>
+          <a href="https://github.com/mataramdevcom" target="_blank" data-i18n="footer-open-source">Forum</a>
+          <a href="#join" data-i18n="footer-join-us">Join Us</a>
+        </div>
+
+        <!-- Find Us col -->
+        <div class="footer-find-us">
+          <span class="footer-nav-heading" data-i18n="footer-heading-findus">Find Us</span>
+          <p class="footer-find-item" data-i18n="footer-address">
+            📍 Mataram, Lombok<br />West Nusa Tenggara,<br />Indonesia
+          </p>
+          <p class="footer-find-item" data-i18n="footer-wfc">
+            💻 WFC &ndash; Every Wednesday
+          </p>
+          <p class="footer-find-item" data-i18n="footer-meetup">
+            🎤 Meetup &ndash; Monthly
+          </p>
+          <p class="footer-find-item" data-i18n="footer-open">
+            🚀 Open to all levels
+          </p>
+          <div class="footer-map">
+            <iframe
+              src="https://maps.google.com/maps?q=Mataram,+Nusa+Tenggara+Barat,+Indonesia&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              title="Mataram Dev location — Mataram, Lombok" loading="lazy" allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <a href="#join" class="footer-join-btn" id="footer-join-now" data-i18n="footer-join-btn">JOIN NOW &rarr;</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom" data-i18n="footer-copyright">
+        &copy; 2026 Mataram Dev &mdash; Made with ❤️ from Lombok.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== BACK TO TOP ====== -->
+  <button id="backToTop" class="back-to-top" aria-label="Back to top">
+    ↑
+  </button>
+
+  <!-- ====== MODAL (EVENT DETAILS / RSVP) ====== -->
+  <div id="eventModal" class="modal">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose" aria-label="Close modal">
+        &times;
+      </button>
+      <div id="modalBody">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./assets/js/main.js"></script>
+</body>
+
 </html>
