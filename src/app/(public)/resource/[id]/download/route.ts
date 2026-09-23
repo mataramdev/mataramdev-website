@@ -18,7 +18,7 @@ export async function GET(
 
   const { data, error } = await supabase
     .from("free_resources")
-    .select("file_url, download_count")
+    .select("file_url")
     .eq("id", id)
     .maybeSingle();
 
@@ -38,12 +38,12 @@ export async function GET(
     return new Response("File resource tidak valid", { status: 500 });
   }
 
-  // Best-effort counter: a rejected update (for example a missing RLS policy
-  // for UPDATE) must not block the download itself.
-  const { error: countError } = await supabase
-    .from("free_resources")
-    .update({ download_count: (data.download_count ?? 0) + 1 })
-    .eq("id", id);
+  // Best-effort counter via RPC: anon holds no UPDATE on free_resources, so
+  // the increment runs through increment_download_count() (SECURITY DEFINER).
+  // A rejected call must not block the download itself.
+  const { error: countError } = await supabase.rpc("increment_download_count", {
+    p_id: id,
+  });
 
   if (countError) {
     console.error(

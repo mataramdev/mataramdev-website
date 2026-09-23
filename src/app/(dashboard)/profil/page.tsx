@@ -14,9 +14,12 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
+  // Deliberately NOT `select("*")`: the email column is revoked for both
+  // API roles (src/lib/db/policies.sql) — PostgREST would answer 42501.
+  // The email comes from the auth session below, never from this table.
   const { data: profile } = await supabase
     .from("users")
-    .select("*")
+    .select("id, fullname, username, bio, image_url")
     .eq("id", user.id)
     .single();
 

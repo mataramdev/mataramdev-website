@@ -137,6 +137,12 @@ export const projects = pgTable("projects", {
   githubUrl: text("github_url"),
   demoUrl: text("demo_url"),
   status: projectStatusEnum("status").notNull().default("pending"),
+  // RLS anchor (src/lib/db/policies.sql): the submitter must be able to read
+  // their own row back while it is still `pending` — the contributor row does
+  // not exist yet, and INSERT ... RETURNING rows must pass the SELECT policy.
+  createdBy: uuid("created_by")
+    .notNull()
+    .references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

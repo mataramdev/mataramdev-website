@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { projectSchema, type ProjectInput } from "@/lib/validations/project";
+import { projectSchema } from "@/lib/validations/project";
 import { generateUniqueSlug } from "@/lib/utils";
 import { isProjectStatus, type ProjectStatus } from "@/lib/projectStatus";
 import type { ActionResult } from "@/types";
@@ -97,12 +97,32 @@ export async function createProject(
       github_url: validated.data.githubUrl || null,
       demo_url: validated.data.demoUrl || null,
       status: "pending",
+      // RLS pins this to the caller (projects_insert_pending) and uses it to
+      // let the author read the row back — the `.select("id")` below would
+      // otherwise fail while the submission is still pending.
+      created_by: user.id,
     })
     .select("id")
     .single();
 
   if (insertError || !project) {
     return { success: false, error: "Gagal membuat proyek" };
+  }
+
+  // Add current user as contributor FIRST: RLS on project_stacks only lets
+  // you link stacks for a project you already contribute to, so this order
+  // is load-bearing (src/lib/db/policies.sql → project_stacks policy).
+  const { error: contributorError } = await supabase
+    .from("project_contributors")
+    .insert({
+      project_id: project.id,
+      user_id: user.id,
+    });
+
+  if (contributorError) {
+    // Non-fatal: project created but contributor not added — the stack links
+    // below are then rejected by RLS as well (both are logged, not thrown).
+    console.error("Failed to add contributor:", contributorError);
   }
 
   // Link stacks
@@ -120,19 +140,6 @@ export async function createProject(
       // Non-fatal: project created but stacks not linked
       console.error("Failed to link stacks:", stackError);
     }
-  }
-
-  // Add current user as contributor
-  const { error: contributorError } = await supabase
-    .from("project_contributors")
-    .insert({
-      project_id: project.id,
-      user_id: user.id,
-    });
-
-  if (contributorError) {
-    // Non-fatal: project created but contributor not added
-    console.error("Failed to add contributor:", contributorError);
   }
 
   revalidatePath("/proyek");
