@@ -44,10 +44,10 @@ export default async function AdminResourcesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-black uppercase leading-none text-2xl">
           Resource
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           {resources.length === 0
             ? "Belum ada resource. Unggah file pertama lewat form di bawah."
             : `${resources.length} resource terunggah, total ${totalDownloads} unduhan${
@@ -66,8 +66,8 @@ export default async function AdminResourcesPage() {
       <ResourceForm />
 
       {resources.length === 0 ? (
-        <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+          <p className="text-muted">
             Resource yang diunggah langsung muncul di halaman publik{" "}
             <span className="font-medium">/resource</span> dan bisa difilter
             berdasarkan kategori.

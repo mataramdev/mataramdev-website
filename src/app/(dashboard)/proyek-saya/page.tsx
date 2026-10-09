@@ -1,13 +1,15 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { formatDate, oneRelation } from "@/lib/utils";
 import {
   PROJECT_STATUSES,
   projectStatusBadgeClasses,
   projectStatusLabel,
   type ProjectStatus,
 } from "@/lib/projectStatus";
+import Icon from "@/components/ui/icons";
 
 export const metadata = {
   title: "Proyek Saya — Mataram Dev",
@@ -107,27 +109,27 @@ export default async function MyProjectsPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="font-black uppercase leading-none text-2xl">
             Proyek Saya
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-sm text-muted">
             Status review proyek yang kamu kirim ke komunitas.
           </p>
         </div>
         <Link
           href="/proyek/baru"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          className="rounded-btn bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
         >
           + Kirim Proyek
         </Link>
       </div>
 
       {justSubmitted && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">
-          <p className="text-sm font-medium text-green-800 dark:text-green-200">
+        <div className="rounded-card border border-[var(--hard-border)] bg-brand-green p-4 dark:border-[var(--hard-border)] dark:bg-brand-green">
+          <p className="text-sm font-medium text-white">
             Proyek berhasil dikirim!
           </p>
-          <p className="mt-1 text-sm text-green-700 dark:text-green-300">
+          <p className="mt-1 text-sm text-white/90">
             Proyek kamu sedang menunggu review admin. Setelah disetujui, proyek
             akan tampil di halaman Proyek komunitas.
           </p>
@@ -135,13 +137,13 @@ export default async function MyProjectsPage({
       )}
 
       {projects.length === 0 ? (
-        <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+          <p className="text-muted">
             Kamu belum mengirim proyek apa pun.
           </p>
           <Link
             href="/proyek/baru"
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="mt-4 inline-block rounded-btn bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
           >
             Kirim Proyek Pertama
           </Link>
@@ -153,18 +155,18 @@ export default async function MyProjectsPage({
               <Link
                 key={tab.key}
                 href={`/proyek-saya?status=${tab.key}`}
-                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-btn border-[3px] border-[var(--hard-border)] px-4 py-1.5 font-mono text-[11px] font-bold uppercase transition-colors ${
                   activeFilter === tab.key
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    ? "border-[var(--hard-border)] bg-accent-500 text-white"
+                    : "border-[var(--hard-border)] text-foreground hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
                 }`}
               >
                 {tab.label}
                 <span
                   className={`ml-1.5 text-xs ${
                     activeFilter === tab.key
-                      ? "text-blue-100"
-                      : "text-zinc-500 dark:text-zinc-400"
+                      ? "text-white/80"
+                      : "text-muted"
                   }`}
                 >
                   {counts[tab.key]}
@@ -174,8 +176,8 @@ export default async function MyProjectsPage({
           </nav>
 
           {visible.length === 0 ? (
-            <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="text-zinc-500 dark:text-zinc-400">
+            <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+              <p className="text-muted">
                 {activeFilter === "all"
                   ? "Belum ada proyek."
                   : `Tidak ada proyek berstatus "${projectStatusLabel(activeFilter)}".`}
@@ -186,7 +188,7 @@ export default async function MyProjectsPage({
               {visible.map((project) => {
                 const stackNames =
                   project.project_stacks
-                    ?.flatMap((ps) => ps.stacks?.[0]?.name ?? [])
+                    ?.map((ps) => oneRelation(ps.stacks)?.name)
                     .filter(Boolean) || [];
 
                 const contributorCount =
@@ -197,20 +199,21 @@ export default async function MyProjectsPage({
                 return (
                   <div
                     key={project.id}
-                    className="flex gap-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                    className="flex gap-4 rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2"
                   >
                     {project.image_url ? (
-                      <div className="hidden h-20 w-32 shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:block dark:bg-zinc-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                      <div className="relative hidden h-20 w-32 shrink-0 overflow-hidden rounded-btn bg-surface-3 sm:block dark:bg-surface-3">
+                        <Image
                           src={project.image_url}
                           alt={project.name}
-                          className="h-full w-full object-cover"
+                          fill
+                          sizes="128px"
+                          className="object-cover"
                         />
                       </div>
                     ) : (
-                      <div className="hidden h-20 w-32 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-2xl sm:flex dark:bg-zinc-800">
-                        🚀
+                      <div className="hidden h-20 w-32 shrink-0 items-center justify-center rounded-btn bg-surface-3 text-muted sm:flex dark:bg-surface-3">
+                        <Icon name="rocket" className="size-7" />
                       </div>
                     )}
 
@@ -219,23 +222,23 @@ export default async function MyProjectsPage({
                         {isApproved ? (
                           <Link
                             href={`/proyek/${project.slug}`}
-                            className="truncate text-sm font-semibold text-zinc-900 hover:text-blue-600 dark:text-zinc-50 dark:hover:text-blue-400"
+                            className="truncate font-black uppercase text-sm hover:text-teal-600 dark:text-foreground dark:hover:text-teal-300"
                           >
                             {project.name}
                           </Link>
                         ) : (
-                          <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                          <span className="truncate font-black uppercase text-sm">
                             {project.name}
                           </span>
                         )}
                         <span
-                          className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium ${projectStatusBadgeClasses(project.status)}`}
+                          className={`inline-flex shrink-0 items-center px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${projectStatusBadgeClasses(project.status)}`}
                         >
                           {projectStatusLabel(project.status)}
                         </span>
                       </div>
 
-                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      <p className="mt-1 text-xs text-muted">
                         Dikirim {formatDate(project.created_at)}
                         {contributorCount > 0 &&
                           ` • ${contributorCount} contributor`}
@@ -246,7 +249,7 @@ export default async function MyProjectsPage({
                           {stackNames.map((name) => (
                             <span
                               key={name}
-                              className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                              className="border-2 border-[var(--hard-border)] bg-brand-yellow px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-black dark:bg-brand-yellow dark:text-teal-300"
                             >
                               {name}
                             </span>
@@ -255,7 +258,7 @@ export default async function MyProjectsPage({
                       )}
 
                       {project.status === "rejected" && (
-                        <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                        <p className="mt-2 text-xs text-accent-600 dark:text-accent-400">
                           Proyek ini tidak lolos review, jadi tidak tampil di
                           halaman publik. Hubungi admin untuk tahu alasannya.
                         </p>
@@ -266,13 +269,13 @@ export default async function MyProjectsPage({
                       {isApproved ? (
                         <Link
                           href={`/proyek/${project.slug}`}
-                          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                          className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
                         >
                           Lihat
                         </Link>
                       ) : (
                         <span
-                          className="cursor-not-allowed rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
+                          className="cursor-not-allowed rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-muted dark:border-[var(--hard-border)] dark:text-muted"
                           title="Belum tampil di halaman publik"
                         >
                           Belum publik

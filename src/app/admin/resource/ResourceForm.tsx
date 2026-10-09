@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createResource } from "@/lib/actions/resources";
 import {
   RESOURCE_CATEGORIES,
@@ -31,49 +31,53 @@ export default function ResourceForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null);
 
-  // The wrapper (not an effect) clears the form after a successful upload, so
-  // the next entry starts blank.
+  // The action is passed to `useActionState` directly (no inline wrapper) so
+  // React can serialise it into `$ACTION_*` fields — that is what gives the
+  // form its no-JS fallback. The form is cleared in an effect after a
+  // *successful* upload; when it fails the filled-in values stay on screen.
   const [state, formAction, pending] = useActionState(
-    async (_prev: ActionResult<null>, formData: FormData) => {
-      const result = await createResource(
-        { success: false, error: "" },
-        formData
-      );
-
-      if (result.success) {
-        formRef.current?.reset();
-        setSelectedFile(null);
-      }
-
-      return result;
-    },
+    createResource,
     initialState
   );
+
+  useEffect(() => {
+    if (state.success) {
+      formRef.current?.reset();
+    }
+  }, [state]);
 
   const isOversized = (selectedFile?.size ?? 0) > MAX_BYTES;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-6 dark:border-[var(--hard-border)] dark:bg-surface-2">
       {state.success === false && state.error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+        <div className="mb-4 rounded-btn border-[3px] border-[var(--hard-border)] bg-accent-700 p-3 text-sm text-white">
           {state.error}
         </div>
       )}
 
       {state.success && (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
+        <div className="mb-4 rounded-btn border-[3px] border-[var(--hard-border)] bg-brand-green p-3 text-sm text-white">
           Resource berhasil diunggah dan langsung tampil di halaman publik.
         </div>
       )}
 
-      <form ref={formRef} action={formAction} className="space-y-4">
+      {/* `form.reset()` fires a `reset` event, so the selected-file label is
+          cleared here instead of inside an effect (setState inside an effect
+          is a lint error, and this keeps the label in sync with the input). */}
+      <form
+        ref={formRef}
+        action={formAction}
+        onReset={() => setSelectedFile(null)}
+        className="space-y-4"
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
             >
-              Nama Resource <span className="text-red-500">*</span>
+              Nama Resource <span className="text-accent-500">*</span>
             </label>
             <input
               id="name"
@@ -83,23 +87,23 @@ export default function ResourceForm() {
               minLength={3}
               maxLength={150}
               placeholder="Contoh: Cheatsheet Git untuk Pemula"
-              className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+              className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
             />
           </div>
 
           <div>
             <label
               htmlFor="category"
-              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
             >
-              Kategori <span className="text-red-500">*</span>
+              Kategori <span className="text-accent-500">*</span>
             </label>
             <select
               id="category"
               name="category"
               required
               defaultValue="doc"
-              className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+              className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3 py-2 text-sm text-foreground focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-[var(--hard-border)] dark:bg-surface-3 dark:text-foreground"
             >
               {RESOURCE_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
@@ -115,7 +119,7 @@ export default function ResourceForm() {
           <div>
             <label
               htmlFor="icon"
-              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
             >
               Ikon (opsional)
             </label>
@@ -125,9 +129,9 @@ export default function ResourceForm() {
               type="text"
               maxLength={16}
               placeholder="📘"
-              className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+              className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
             />
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-xs text-muted">
               Tempel satu emoji. Kalau dikosongkan, ikon kategori yang dipakai.
             </p>
           </div>
@@ -135,9 +139,9 @@ export default function ResourceForm() {
           <div>
             <label
               htmlFor="file"
-              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
             >
-              File <span className="text-red-500">*</span>
+              File <span className="text-accent-500">*</span>
             </label>
             <input
               id="file"
@@ -150,14 +154,14 @@ export default function ResourceForm() {
                   file ? { name: file.name, size: file.size } : null
                 );
               }}
-              className="mt-1 block w-full text-sm text-zinc-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-950 dark:file:text-blue-300"
+              className="mt-1 block w-full text-sm text-muted file:mr-4 file:rounded-btn file:border-[3px] file:border-[var(--hard-border)] file:bg-brand-yellow file:px-4 file:py-2 file:text-sm file:font-bold file:text-black hover:file:bg-accent-500 hover:file:text-white"
             />
             {selectedFile ? (
               <p
                 className={`mt-1 text-xs ${
                   isOversized
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-zinc-500 dark:text-zinc-400"
+                    ? "text-accent-600 dark:text-accent-400"
+                    : "text-muted"
                 }`}
               >
                 Terpilih: {selectedFile.name} (
@@ -166,7 +170,7 @@ export default function ResourceForm() {
                   ` — melebihi batas ${RESOURCE_MAX_FILE_MB}MB, pilih file lain.`}
               </p>
             ) : (
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-muted">
                 PDF, ZIP, gambar, atau file lain. Maksimal{" "}
                 {RESOURCE_MAX_FILE_MB}MB.
               </p>
@@ -174,11 +178,11 @@ export default function ResourceForm() {
           </div>
         </div>
 
-        <div className="flex justify-end border-t border-zinc-200 pt-4 dark:border-zinc-800">
+        <div className="flex justify-end border-t border-[var(--hard-border)] pt-4 dark:border-[var(--hard-border)]">
           <button
             type="submit"
             disabled={pending || isOversized}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-btn bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {pending ? "Mengunggah..." : "+ Unggah Resource"}
           </button>

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { projectSchema } from "@/lib/validations/project";
 import { generateUniqueSlug } from "@/lib/utils";
 import { isProjectStatus, type ProjectStatus } from "@/lib/projectStatus";
+import { storagePathFromPublicUrl } from "@/lib/storage";
 import type { ActionResult } from "@/types";
 
 /**
@@ -212,21 +213,110 @@ export async function moderateProject(
 }
 
 /**
- * Fetch all available stacks for selection.
+ * Delete a project and everything attached to it (Task 9.5).
+ *
+ * Admin only. The child tables (`project_stacks`, `project_contributors`) have
+ * no ON DELETE CASCADE, so they are cleared first — same order `stacks.ts`
+ * uses when it detaches a stack. The cover object is removed from storage
+ * best-effort: the row is the source of truth and a storage hiccup must not
+ * resurrect a project the admin already deleted.
  */
-export async function getStacks(): Promise<
-  ActionResult<{ id: string; name: string }[]>
-> {
+export async function deleteProject(
+  projectId: string
+): Promise<ActionResult<null>> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { data, error } = await supabase
-    .from("stacks")
-    .select("id, name")
-    .order("name");
-
-  if (error) {
-    return { success: false, error: "Gagal mengambil data stack" };
+  if (!user) {
+    return { success: false, error: "Anda harus login" };
   }
 
-  return { success: true, data: data || [] };
+  const { data: profile, error: profileError } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    return { success: false, error: "Gagal memverifikasi akun Anda" };
+  }
+
+  if (profile?.role !== "admin") {
+    return { success: false, error: "Hanya admin yang bisa menghapus proyek" };
+  }
+
+  const { data: project, error: readError } = await supabase
+    .from("projects")
+    .select("id, slug, image_url")
+    .eq("id", projectId)
+    .maybeSingle();
+
+  if (readError) {
+    return { success: false, error: "Gagal membaca data proyek" };
+  }
+
+  if (!project) {
+    return { success: false, error: "Proyek tidak ditemukan" };
+  }
+
+  const { error: stacksError } = await supabase
+    .from("project_stacks")
+    .delete()
+    .eq("project_id", projectId);
+
+  if (stacksError) {
+    return { success: false, error: "Gagal melepas stack proyek" };
+  }
+
+  const { error: contributorsError } = await supabase
+    .from("project_contributors")
+    .delete()
+    .eq("project_id", projectId);
+
+  if (contributorsError) {
+    return { success: false, error: "Gagal melepas kontributor proyek" };
+  }
+
+  const { data: deleted, error: deleteError } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", projectId)
+    .select("id");
+
+  if (deleteError) {
+    return { success: false, error: "Gagal menghapus proyek" };
+  }
+
+  // RLS denial deletes 0 rows without raising — report it instead of lying.
+  if (!deleted || deleted.length === 0) {
+    return { success: false, error: "Proyek tidak ditemukan" };
+  }
+
+  const path = project.image_url
+    ? storagePathFromPublicUrl(project.image_url, "projects")
+    : null;
+
+  if (path) {
+    const { error: removeError } = await supabase.storage
+      .from("projects")
+      .remove([path]);
+
+    if (removeError) {
+      console.error(
+        "[deleteProject] row dihapus tapi cover gagal dihapus dari storage:",
+        removeError
+      );
+    }
+  }
+
+  revalidatePath("/admin/proyek");
+  revalidatePath("/proyek");
+  revalidatePath("/proyek-saya");
+  if (project.slug) {
+    revalidatePath(`/proyek/${project.slug}`);
+  }
+
+  return { success: true, data: null };
 }

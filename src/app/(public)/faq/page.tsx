@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { sortFaqRows } from "@/lib/faq";
+import {
+  BTN_RED,
+  FaqItem,
+  HARD_CARD,
+  NARROW,
+  NEO_BADGE,
+  SectionEmpty,
+} from "@/components/ui/brutalist";
 
 export const metadata = {
   title: "FAQ — Mataram Dev",
@@ -29,63 +37,49 @@ export default async function FaqPage() {
   const faqItems = sortFaqRows((data || []) as unknown as FaqRowData[]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+    <div className="bg-background py-16 sm:py-24">
+      <div className={`${NARROW} text-center`}>
+        <span className={`${NEO_BADGE} bg-accent-500 px-6 py-2.5 text-lg text-white`}>
+          FAQ
+        </span>
+        <h1 className="mt-4 font-black uppercase leading-none text-3xl sm:text-4xl lg:text-5xl">
           Pertanyaan Umum
         </h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-3 text-base text-muted">
           Hal-hal yang paling sering ditanyakan soal komunitas. Kalau
-          pertanyaanmu belum ada di sini, tanya langsung di forum komunitas.
+          pertanyaanmu belum ada di sini, tanya langsung di event terdekat.
         </p>
-      </header>
 
-      {faqItems.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        {faqItems.length === 0 ? (
+          <SectionEmpty>
             Belum ada FAQ yang dipublikasikan. Nantikan ya!
-          </p>
-        </div>
-      ) : (
-        <ol className="mt-8 space-y-3">
-          {faqItems.map((item, index) => (
-            <li key={item.id}>
-              <details className="group rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                <summary className="flex cursor-pointer list-none items-start gap-3 p-5 text-left [&::-webkit-details-marker]:hidden">
-                  <span className="shrink-0 text-sm font-semibold tabular-nums text-zinc-400 dark:text-zinc-500">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="flex-1 text-base font-semibold text-zinc-900 dark:text-zinc-50">
-                    {item.question}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="shrink-0 text-zinc-400 transition-transform group-open:rotate-180 dark:text-zinc-500"
-                  >
-                    ▾
-                  </span>
-                </summary>
-                <div className="border-t border-zinc-100 px-5 py-4 pl-[3.25rem] dark:border-zinc-800">
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    {item.answer}
-                  </p>
-                </div>
-              </details>
-            </li>
-          ))}
-        </ol>
-      )}
+          </SectionEmpty>
+        ) : (
+          <div className="mt-10 flex flex-col gap-4 text-left">
+            {faqItems.map((item, index) => (
+              <FaqItem
+                key={item.id}
+                question={item.question}
+                answer={item.answer}
+                number={String(index + 1).padStart(2, "0")}
+                defaultOpen={index === 0}
+              />
+            ))}
+          </div>
+        )}
 
-      <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
-        Masih ada pertanyaan?{" "}
-        <Link
-          href="/event"
-          className="font-medium text-blue-600 hover:underline dark:text-blue-400"
-        >
-          Datang ke event terdekat
-        </Link>{" "}
-        dan tanyakan langsung ke pengurus.
-      </p>
+        <div className={`${HARD_CARD} mt-10 bg-surface-2 p-8`}>
+          <p className="font-black text-lg">Masih ada pertanyaan?</p>
+          <p className="mt-1 text-sm text-muted">
+            Datang ke event terdekat dan tanyakan langsung ke pengurus.
+          </p>
+          <div className="mt-5 flex justify-center">
+            <Link href="/event" className={BTN_RED}>
+              Lihat Event Terdekat →
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

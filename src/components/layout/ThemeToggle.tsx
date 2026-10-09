@@ -1,23 +1,37 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+/**
+ * Tema hanya diketahui di browser, jadi render pertama harus sama dengan
+ * server (tanpa tema) dan baru berubah setelah hydration. `useSyncExternalStore`
+ * menjawab pertanyaan "sudah di client belum?" tanpa `setState` di dalam
+ * effect — pola itu memicu cascading render dan ditolak oleh lint.
+ */
+const subscribe = () => () => {};
+
+function useIsClient() {
+  return useSyncExternalStore(
+    subscribe,
+    () => true, // snapshot di client
+    () => false // snapshot di server, dan saat hydration
+  );
+}
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const isClient = useIsClient();
 
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) {
-    return <div className="h-9 w-9" />;
+  if (!isClient) {
+    return <div className="size-10" />;
   }
 
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-      aria-label="Toggle dark mode"
+      className="inline-flex size-10 shrink-0 items-center justify-center rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 text-foreground"
+      aria-label="Ganti mode gelap/terang"
     >
       {theme === "dark" ? (
         <svg

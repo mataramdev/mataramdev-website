@@ -4,7 +4,8 @@
 -- Run order (once per project):
 --   1. pnpm db:push                     (creates tables — src/lib/db/schema.ts)
 --   2. psql "$DATABASE_URL" -f src/lib/db/trigger.sql
---   3. psql "$DATABASE_URL" -f src/lib/db/policies.sql   (this file)
+--   3. psql "$DATABASE_URL" -f src/lib/db/approval.sql   (kolom approval_status)
+--   4. psql "$DATABASE_URL" -f src/lib/db/policies.sql   (this file)
 --
 -- Idempotent: safe to re-run. NOTE: tables created by a LATER db:push
 -- still need their own `ENABLE ROW LEVEL SECURITY` + policies — only the
@@ -75,12 +76,22 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
 -- authenticated keeps the Supabase default (ALL) — the policies in step 2
 -- narrow it down. TRUNCATE is an owner-level foot-gun nothing in the app needs.
 REVOKE TRUNCATE ON ALL TABLES IN SCHEMA public FROM authenticated;
+-- Authenticated keeps SELECT here on purpose: RLS decides which *rows* it may
+-- see, and every logged-in page needs to read. Stated explicitly rather than
+-- inherited from Supabase's default privileges, so this file alone is enough
+-- to bring a database to the intended state (and so a stray REVOKE can be
+-- repaired by re-running it). Runs before the `users` block below, which then
+-- replaces this with per-column grants — the order there is what keeps
+-- `users.email` unreadable.
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO authenticated;
 
 -- users: full email lockdown for both API roles, and profile columns are
 -- the only ones an authenticated user may UPDATE — `role` is not one of
--- them, so a compromised session cannot promote itself via REST.
+-- them, so a compromised session cannot promote itself via REST. `is_active`
+-- is readable (login and the layouts check it on the account's own row) but
+-- likewise NOT updatable: admin changes go through the RPCs in section 5.
 REVOKE ALL ON public.users FROM anon, authenticated;
-GRANT SELECT (id, fullname, username, role, image_url, bio, created_at, updated_at)
+GRANT SELECT (id, fullname, username, role, is_active, approval_status, image_url, bio, created_at, updated_at)
   ON public.users TO anon, authenticated;
 GRANT UPDATE (fullname, username, bio, image_url, updated_at)
   ON public.users TO authenticated;
@@ -127,6 +138,7 @@ ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS posts_read ON public.posts;
 DROP POLICY IF EXISTS posts_insert_own ON public.posts;
 DROP POLICY IF EXISTS posts_update_own ON public.posts;
+DROP POLICY IF EXISTS posts_delete_own ON public.posts;
 -- Public sees published only; authors additionally see their own drafts
 -- (dashboard/artikel-saya). auth.uid() is NULL for anon → published only.
 CREATE POLICY posts_read ON public.posts
@@ -138,6 +150,14 @@ CREATE POLICY posts_update_own ON public.posts
 CREATE POLICY posts_insert_own ON public.posts
   FOR INSERT TO authenticated
   WITH CHECK (author_id = auth.uid());
+-- deletePost() (dashboard/artikel-saya) removes the author's own article.
+-- Without this policy RLS is default-deny for DELETE, so the request is
+-- rejected with 0 rows even when the author owns the post.
+-- NOTE: only the author may UPDATE a post (posts_update_own) — admins are not
+-- granted UPDATE here, so any future admin moderation must add its own policy.
+CREATE POLICY posts_delete_own ON public.posts
+  FOR DELETE TO authenticated
+  USING (author_id = auth.uid() OR public.is_admin());
 
 -- projects ───────────────────────────────────────────────
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
@@ -170,7 +190,12 @@ CREATE POLICY projects_moderate ON public.projects
   FOR UPDATE TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
--- No DELETE policy: the app has no project-deletion flow.
+-- Admin deletion (Task 9.5): deleteProject() removes child rows first, then
+-- the project. RLS default-deny would otherwise reject the DELETE with 0 rows.
+DROP POLICY IF EXISTS projects_delete_admin ON public.projects;
+CREATE POLICY projects_delete_admin ON public.projects
+  FOR DELETE TO authenticated
+  USING (public.is_admin());
 
 -- project_contributors ───────────────────────────────────
 ALTER TABLE public.project_contributors ENABLE ROW LEVEL SECURITY;
@@ -193,6 +218,11 @@ CREATE POLICY project_contributors_insert_own ON public.project_contributors
       WHERE p.id = project_contributors.project_id AND p.status = 'pending'
     )
   );
+-- Admin-only cleanup when a project is deleted (Task 9.5, projects_delete_admin).
+DROP POLICY IF EXISTS project_contributors_delete_admin ON public.project_contributors;
+CREATE POLICY project_contributors_delete_admin ON public.project_contributors
+  FOR DELETE TO authenticated
+  USING (public.is_admin());
 
 -- project_stacks ─────────────────────────────────────────
 ALTER TABLE public.project_stacks ENABLE ROW LEVEL SECURITY;
@@ -239,6 +269,20 @@ CREATE POLICY event_rsvp_update_own ON public.event_rsvp
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
 -- No DELETE: the toggle action updates status instead (rsvp.ts).
+
+-- event_speakers ─────────────────────────────────────────
+-- Pembicara per event: nama + foto bebas (tanpa FK ke users), dibuat admin
+-- lewat form event. Publik perlu membacanya untuk render halaman detail.
+ALTER TABLE public.event_speakers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS event_speakers_read ON public.event_speakers;
+DROP POLICY IF EXISTS event_speakers_write_admin ON public.event_speakers;
+CREATE POLICY event_speakers_read ON public.event_speakers
+  FOR SELECT USING (true);
+-- Same shape as events_write_admin: only admins maintain the roster.
+CREATE POLICY event_speakers_write_admin ON public.event_speakers
+  FOR ALL TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- events ─────────────────────────────────────────────────
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
@@ -360,7 +404,8 @@ VALUES
   ('events',    'events',    true),
   ('projects',  'projects',  true),
   ('posts',     'posts',     true),
-  ('resources', 'resources', true)
+  ('resources', 'resources', true),
+  ('settings',  'settings',  true)
 ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
 
 
@@ -375,7 +420,7 @@ ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
 DROP POLICY IF EXISTS mdev_objects_read ON storage.objects;
 CREATE POLICY mdev_objects_read ON storage.objects
   FOR SELECT USING (
-    bucket_id IN ('events', 'projects', 'posts', 'resources')
+    bucket_id IN ('events', 'projects', 'posts', 'resources', 'settings')
   );
 
 DROP POLICY IF EXISTS mdev_events_insert ON storage.objects;
@@ -407,10 +452,162 @@ CREATE POLICY mdev_posts_insert ON storage.objects
   );
 
 -- Only admin cleanup paths call .remove(): resources.ts rollback on failed
--- insert + deleteResource. The other buckets have no deletion code path.
+-- insert + deleteResource, community.ts when a logo is replaced/removed, and
+-- projects.ts deleteProject() removing a project's cover (Task 9.5).
 DROP POLICY IF EXISTS mdev_resources_delete ON storage.objects;
 CREATE POLICY mdev_resources_delete ON storage.objects
   FOR DELETE TO authenticated
   USING (bucket_id = 'resources' AND public.is_admin());
 
+DROP POLICY IF EXISTS mdev_projects_delete ON storage.objects;
+CREATE POLICY mdev_projects_delete ON storage.objects
+  FOR DELETE TO authenticated
+  USING (bucket_id = 'projects' AND public.is_admin());
+
+-- settings/  community.ts    → admin only (community logo upload, Task 9.3)
+DROP POLICY IF EXISTS mdev_settings_insert ON storage.objects;
+CREATE POLICY mdev_settings_insert ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'settings' AND public.is_admin());
+
+DROP POLICY IF EXISTS mdev_settings_delete ON storage.objects;
+CREATE POLICY mdev_settings_delete ON storage.objects
+  FOR DELETE TO authenticated
+  USING (bucket_id = 'settings' AND public.is_admin());
+
 -- No UPDATE policies: every upload in the app uses upsert=false.
+
+
+-- ─── 5. Admin user management (Task 9.2 / PRD §4.1) ────────
+-- `role` and `is_active` are deliberately absent from the UPDATE grant
+-- (section 1), so every admin change runs through these SECURITY DEFINER
+-- functions — same strategy as increment_download_count(). The functions
+-- re-check is_admin() server-side; middleware and the admin layout only know
+-- that a session exists.
+--
+-- Self-guard invariant: an admin can never change their OWN role or
+-- active flag, so there is always at least one active admin — the actor.
+
+-- Return type grew an `approval_status` column, and CREATE OR REPLACE cannot
+-- change a function's OUT-parameter row type — it has to be dropped first.
+-- Idempotent: a plain drop of a function this file owns.
+DROP FUNCTION IF EXISTS public.admin_list_users();
+
+CREATE OR REPLACE FUNCTION public.admin_list_users()
+RETURNS TABLE (
+  id uuid,
+  fullname text,
+  username text,
+  email text,
+  role public.user_role,
+  is_active boolean,
+  approval_status public.approval_status,
+  created_at timestamptz
+)
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Hanya admin yang bisa melihat daftar pengguna';
+  END IF;
+  -- `email` is revoked in section 1, so the admin list can only come from
+  -- here (the table owner keeps it). Qualified columns: the output parameter
+  -- names would otherwise be ambiguous with the table's own columns.
+  RETURN QUERY
+  SELECT u.id, u.fullname, u.username, u.email, u.role, u.is_active,
+         u.approval_status, u.created_at
+  FROM public.users u
+  ORDER BY
+    -- Pendaftar yang belum disetujui tampil paling atas: itu satu-satunya
+    -- baris yang butuh tindakan admin.
+    (u.approval_status = 'pending') DESC,
+    u.created_at DESC;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_set_user_role(
+  p_user_id uuid,
+  p_role public.user_role
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Hanya admin yang bisa mengubah role pengguna';
+  END IF;
+  IF p_user_id = auth.uid() THEN
+    RAISE EXCEPTION 'Tidak bisa mengubah role akun sendiri';
+  END IF;
+  UPDATE public.users
+  SET role = p_role, updated_at = now()
+  WHERE id = p_user_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pengguna tidak ditemukan';
+  END IF;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_set_user_active(
+  p_user_id uuid,
+  p_active boolean
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Hanya admin yang bisa menonaktifkan akun';
+  END IF;
+  IF p_user_id = auth.uid() THEN
+    RAISE EXCEPTION 'Tidak bisa menonaktifkan akun sendiri';
+  END IF;
+  UPDATE public.users
+  SET is_active = p_active, updated_at = now()
+  WHERE id = p_user_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pengguna tidak ditemukan';
+  END IF;
+END;
+$$;
+
+-- Setujui / tolak pendaftaran. Akun baru dibuat `pending` oleh trigger, dan
+-- tidak bisa login sampai di sini. Menyetujui sekaligus mengaktifkan kembali
+-- akunnya: kalau akunnya pernah ditolak/dinonaktifkan, "approve" harus benar-
+-- benar berarti "boleh masuk" — bukan status yang masih memblokir tanpa admin
+-- sadar harus menekan tombol kedua.
+CREATE OR REPLACE FUNCTION public.admin_set_user_approval(
+  p_user_id uuid,
+  p_status public.approval_status
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Hanya admin yang bisa menyetujui pendaftaran';
+  END IF;
+  IF p_user_id = auth.uid() THEN
+    RAISE EXCEPTION 'Tidak bisa mengubah status persetujuan akun sendiri';
+  END IF;
+
+  UPDATE public.users
+  SET approval_status = p_status,
+      is_active = CASE WHEN p_status = 'approved' THEN true ELSE is_active END,
+      updated_at = now()
+  WHERE id = p_user_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Pengguna tidak ditemukan';
+  END IF;
+END;
+$$;

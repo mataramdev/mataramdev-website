@@ -32,8 +32,15 @@ Thumbs.db
 # design mockups kept next to the project for reference, not part of the repo
 ui_design_canva/
 
-# local tooling state (symlink to ~/.omo/codegraph) — breaks Turbopack's CSS loader if scanned
-.codegraph/
+# documentation & agent notes — sengaja tidak ikut di-commit (permintaan pemilik)
+/docs/
+/AGENTS.md
+/CLAUDE.md
+
+# local tooling state (symlink ke ~/.omo/codegraph) — breaks Turbopack's CSS loader if scanned
+# tanpa garis miring: pola `.codegraph/` hanya cocok dengan direktori, sedangkan ini symlink
+.codegraph
+.codegraph.db
 # agent session state written next to the project by local tooling
 .omo/
 

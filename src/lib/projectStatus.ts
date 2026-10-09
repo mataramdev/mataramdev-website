@@ -15,12 +15,14 @@ export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   rejected: "Ditolak",
 };
 
+/**
+ * Badge neo-brutalist: border 2px + warna solid + teks yang lolos kontras
+ * (langkah, bukan pill) — dipakai tabel dashboard & antrian moderasi admin.
+ */
 export const PROJECT_STATUS_BADGE_CLASSES: Record<ProjectStatus, string> = {
-  pending:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-  approved:
-    "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  rejected: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+  pending: "border-2 border-[var(--hard-border)] bg-brand-gold text-black",
+  approved: "border-2 border-[var(--hard-border)] bg-brand-green text-white",
+  rejected: "border-2 border-[var(--hard-border)] bg-accent-500 text-white",
 };
 
 export function isProjectStatus(value: string | undefined): value is ProjectStatus {

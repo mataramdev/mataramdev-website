@@ -24,35 +24,36 @@ function dom<P extends { node?: unknown }>(props: P): Omit<P, "node"> {
  * stray `<script>` in an article body is escaped instead of executed.
  *
  * The project does not use `@tailwindcss/typography`, so each element is
- * styled explicitly here.
+ * styled explicitly here — dengan token neo-brutalist yang sama seperti
+ * halaman lain.
  */
 export default function Markdown({ children, className = "" }: MarkdownProps) {
   return (
-    <div className={`text-zinc-700 dark:text-zinc-300 ${className}`.trim()}>
+    <div className={`text-foreground ${className}`.trim()}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           h1: (props) => (
             <h1
-              className="mt-8 mb-3 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50"
+              className="mt-10 mb-3 font-black uppercase leading-none text-2xl"
               {...dom(props)}
             />
           ),
           h2: (props) => (
             <h2
-              className="mt-8 mb-3 text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50"
+              className="mt-10 mb-3 font-black uppercase leading-none text-xl"
               {...dom(props)}
             />
           ),
           h3: (props) => (
             <h3
-              className="mt-6 mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-50"
+              className="mt-6 mb-2 font-black uppercase text-lg"
               {...dom(props)}
             />
           ),
           h4: (props) => (
             <h4
-              className="mt-4 mb-2 text-base font-semibold text-zinc-900 dark:text-zinc-50"
+              className="mt-4 mb-2 font-bold text-base"
               {...dom(props)}
             />
           ),
@@ -66,12 +67,15 @@ export default function Markdown({ children, className = "" }: MarkdownProps) {
           li: (props) => <li className="leading-relaxed" {...dom(props)} />,
           blockquote: (props) => (
             <blockquote
-              className="my-4 border-l-4 border-zinc-300 pl-4 italic text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
+              className="my-5 rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-3 p-4 italic text-muted"
               {...dom(props)}
             />
           ),
           hr: (props) => (
-            <hr className="my-8 border-zinc-200 dark:border-zinc-800" {...dom(props)} />
+            <hr
+              className="my-8 border-0 border-t-[3px] border-[var(--hard-border)]"
+              {...dom(props)}
+            />
           ),
           a: ({ href, ...props }) => {
             const isExternal = /^https?:\/\//.test(href ?? "");
@@ -81,20 +85,17 @@ export default function Markdown({ children, className = "" }: MarkdownProps) {
                 {...(isExternal
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
-                className="font-medium text-blue-600 underline underline-offset-2 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                className="font-bold text-teal-600 underline underline-offset-2 hover:text-teal-700 dark:text-teal-300"
                 {...dom(props)}
               />
             );
           },
           strong: (props) => (
-            <strong
-              className="font-semibold text-zinc-900 dark:text-zinc-100"
-              {...dom(props)}
-            />
+            <strong className="font-black text-foreground" {...dom(props)} />
           ),
           pre: (props) => (
             <pre
-              className="my-4 overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100 dark:bg-zinc-800"
+              className="my-5 overflow-x-auto rounded-btn border-[3px] border-[var(--hard-border)] bg-brand-navy p-4 text-sm text-white"
               {...dom(props)}
             />
           ),
@@ -114,7 +115,7 @@ export default function Markdown({ children, className = "" }: MarkdownProps) {
 
             return (
               <code
-                className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[0.85em] text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200"
+                className="border-2 border-[var(--hard-border)] bg-brand-yellow px-1.5 py-0.5 font-mono text-[0.85em] text-black"
                 {...dom(props)}
               >
                 {codeChildren}
@@ -122,26 +123,33 @@ export default function Markdown({ children, className = "" }: MarkdownProps) {
             );
           },
           table: (props) => (
-            <div className="my-4 overflow-x-auto">
-              <table className="w-full border-collapse text-sm" {...dom(props)} />
+            <div className="my-5 overflow-x-auto">
+              <table
+                className="w-full border-collapse border-[3px] border-[var(--hard-border)] text-sm"
+                {...dom(props)}
+              />
             </div>
           ),
           th: (props) => (
             <th
-              className="border border-zinc-200 bg-zinc-50 px-3 py-2 text-left font-semibold dark:border-zinc-700 dark:bg-zinc-800"
+              className="border-2 border-[var(--hard-border)] bg-surface-3 px-3 py-2 text-left font-black uppercase"
               {...dom(props)}
             />
           ),
           td: (props) => (
             <td
-              className="border border-zinc-200 px-3 py-2 dark:border-zinc-700"
+              className="border-2 border-[var(--hard-border)] px-3 py-2"
               {...dom(props)}
             />
           ),
           img: ({ alt, ...props }) => (
+            // Deliberately a plain <img>: the URL comes from the article body,
+            // so its host is whatever the author typed. next/image would reject
+            // every host that is not in `images.remotePatterns` (only Supabase
+            // Storage is listed), which would silently break those articles.
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              className="my-4 rounded-lg border border-zinc-200 dark:border-zinc-800"
+              className="my-5 border-[3px] border-[var(--hard-border)]"
               alt={alt ?? ""}
               {...dom(props)}
             />

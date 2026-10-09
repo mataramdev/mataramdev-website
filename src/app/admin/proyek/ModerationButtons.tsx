@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { moderateProject } from "@/lib/actions/projects";
+import { moderateProject, deleteProject } from "@/lib/actions/projects";
 import type { ProjectStatus } from "@/lib/projectStatus";
 
 interface ModerationButtonsProps {
@@ -14,7 +14,10 @@ export default function ModerationButtons({
   status,
 }: ModerationButtonsProps) {
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, startDelete] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const busy = isPending || isDeleting;
 
   const run = (next: ProjectStatus, confirmMessage?: string) => {
     if (confirmMessage && !confirm(confirmMessage)) return;
@@ -28,14 +31,33 @@ export default function ModerationButtons({
     });
   };
 
+  // Task 9.5: permanent removal, including its stacks/contributors and cover.
+  const remove = () => {
+    if (
+      !confirm(
+        "Hapus proyek ini secara permanen? Stack, kontributor, dan gambarnya ikut terhapus. Tindakan ini tidak bisa dibatalkan."
+      )
+    ) {
+      return;
+    }
+
+    setError(null);
+    startDelete(async () => {
+      const result = await deleteProject(projectId);
+      if (!result.success) {
+        setError(result.error);
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="flex shrink-0 items-center gap-2">
         {status !== "approved" && (
           <button
             onClick={() => run("approved")}
-            disabled={isPending}
-            className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={busy}
+            className="rounded-btn bg-brand-green px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-brand-green disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "..." : "Setujui"}
           </button>
@@ -46,8 +68,8 @@ export default function ModerationButtons({
             onClick={() =>
               run("rejected", "Tolak proyek ini? Publik tidak akan melihatnya.")
             }
-            disabled={isPending}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+            disabled={busy}
+            className="rounded-btn border border-accent-500 px-3 py-1.5 text-xs font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-accent-700 dark:text-accent-500 dark:hover:bg-accent-950"
           >
             {isPending ? "..." : "Tolak"}
           </button>
@@ -56,16 +78,24 @@ export default function ModerationButtons({
         {status !== "pending" && (
           <button
             onClick={() => run("pending")}
-            disabled={isPending}
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            disabled={busy}
+            className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
           >
             {isPending ? "..." : "Kembalikan"}
           </button>
         )}
+
+        <button
+          onClick={remove}
+          disabled={busy}
+          className="rounded-btn bg-accent-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-accent-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isDeleting ? "..." : "Hapus"}
+        </button>
       </div>
 
       {error && (
-        <p className="max-w-xs text-right text-xs text-red-600 dark:text-red-400">
+        <p className="max-w-xs text-right text-xs text-accent-600 dark:text-accent-400">
           {error}
         </p>
       )}

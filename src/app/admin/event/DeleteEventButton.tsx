@@ -22,7 +22,7 @@ export default function DeleteEventButton({ eventId }: DeleteEventButtonProps) {
     <button
       onClick={handleDelete}
       disabled={isPending}
-      className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+      className="rounded-btn border border-accent-500 px-3 py-1.5 text-xs font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-accent-700 dark:text-accent-500 dark:hover:bg-accent-950"
     >
       {isPending ? "..." : "Hapus"}
     </button>

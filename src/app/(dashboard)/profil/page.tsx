@@ -32,10 +32,10 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-black uppercase leading-none text-2xl">
           Profil Saya
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           Kelola informasi profil kamu.
         </p>
       </div>
@@ -53,31 +53,31 @@ export default async function ProfilePage() {
         initialLinks={socialLinks || []}
       />
 
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+      <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-6 dark:border-[var(--hard-border)] dark:bg-surface-2">
+        <h2 className="font-black uppercase text-sm">
           Proyek Saya
         </h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           Lihat status review proyek yang kamu kirim ke komunitas.
         </p>
         <Link
           href="/proyek-saya"
-          className="mt-4 inline-block rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="mt-4 inline-block rounded-btn border-[3px] border-[var(--hard-border)] px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
         >
           Buka Proyek Saya →
         </Link>
       </div>
 
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+      <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-6 dark:border-[var(--hard-border)] dark:bg-surface-2">
+        <h2 className="font-black uppercase text-sm">
           Artikel Saya
         </h2>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           Tulis artikel baru atau lanjutkan draf yang belum selesai.
         </p>
         <Link
           href="/artikel-saya"
-          className="mt-4 inline-block rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="mt-4 inline-block rounded-btn border-[3px] border-[var(--hard-border)] px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
         >
           Buka Artikel Saya →
         </Link>

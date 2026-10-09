@@ -2,11 +2,95 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { communitySettingsSchema } from "@/lib/validations/community";
 import {
-  communitySettingsSchema,
-  type CommunitySettingsInput,
-} from "@/lib/validations/community";
+  LOGO_MAX_FILE_MB,
+  SETTINGS_BUCKET,
+  storagePathFromPublicUrl,
+} from "@/lib/storage";
 import type { ActionResult } from "@/types";
+
+type Supabase = Awaited<ReturnType<typeof createClient>>;
+
+/** Keeps the stored object name readable instead of trusting the raw filename. */
+function safeFileName(originalName: string): string {
+  const cleaned = originalName
+    .toLowerCase()
+    .replace(/[^\w.-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return cleaned.length > 0 ? cleaned : "logo";
+}
+
+/** Best-effort delete of a logo object we are replacing or clearing. */
+async function removeLogoObject(supabase: Supabase, url: string | null) {
+  if (!url) return;
+
+  const path = storagePathFromPublicUrl(url, SETTINGS_BUCKET);
+  if (!path) return;
+
+  const { error } = await supabase.storage.from(SETTINGS_BUCKET).remove([path]);
+  if (error) {
+    // The new URL is already saved; a leftover object is untidy but harmless,
+    // so this must not fail the whole save.
+    console.error("[updateCommunitySettings] gagal menghapus logo lama:", error);
+  }
+}
+
+/**
+ * Resolves one logo field (Task 9.3 / PRD §4.7).
+ *
+ * Three outcomes: a freshly uploaded URL, the current URL unchanged, or null
+ * when the admin ticked the remove box. Anything else is an error message.
+ */
+async function resolveLogo(
+  supabase: Supabase,
+  file: FormDataEntryValue | null,
+  remove: boolean,
+  current: string | null,
+  label: string
+): Promise<{ url: string | null } | { error: string }> {
+  const hasFile = file instanceof File && file.size > 0;
+
+  if (remove && !hasFile) {
+    await removeLogoObject(supabase, current);
+    return { url: null };
+  }
+
+  if (!hasFile) {
+    return { url: current };
+  }
+
+  if (file.type && !file.type.startsWith("image/")) {
+    return { error: `${label} harus berupa gambar` };
+  }
+
+  const maxBytes = LOGO_MAX_FILE_MB * 1024 * 1024;
+  if (file.size > maxBytes) {
+    return { error: `Ukuran ${label} maksimal ${LOGO_MAX_FILE_MB}MB` };
+  }
+
+  const path = `logos/${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2, 8)}-${safeFileName(file.name)}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(SETTINGS_BUCKET)
+    .upload(path, file);
+
+  if (uploadError) {
+    return { error: `Gagal mengunggah ${label}` };
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(SETTINGS_BUCKET).getPublicUrl(path);
+
+  await removeLogoObject(supabase, current);
+
+  return { url: publicUrl };
+}
 
 export async function updateCommunitySettings(
   _prevState: ActionResult<null>,
@@ -54,36 +138,61 @@ export async function updateCommunitySettings(
         .filter(Boolean)
     : null;
 
-  // Upsert: always maintain a single row
-  const { data: existing } = await supabase
+  // Read the current row first: it is both the singleton target and the source
+  // of the existing logo URLs (needed to clean up replaced objects).
+  const { data: existing, error: readError } = await supabase
     .from("community_settings")
-    .select("id")
+    .select("id, light_logo_url, dark_logo_url")
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  if (readError) {
+    return { success: false, error: "Gagal membaca pengaturan" };
+  }
+
+  const light = await resolveLogo(
+    supabase,
+    formData.get("lightLogo"),
+    formData.get("removeLightLogo") === "on",
+    existing?.light_logo_url ?? null,
+    "logo terang"
+  );
+  if ("error" in light) {
+    return { success: false, error: light.error };
+  }
+
+  const dark = await resolveLogo(
+    supabase,
+    formData.get("darkLogo"),
+    formData.get("removeDarkLogo") === "on",
+    existing?.dark_logo_url ?? null,
+    "logo gelap"
+  );
+  if ("error" in dark) {
+    return { success: false, error: dark.error };
+  }
+
+  const payload = {
+    name: validated.data.name,
+    description: validated.data.description || null,
+    keywords,
+    address: validated.data.address || null,
+    maps_location: validated.data.mapsLocation || null,
+    light_logo_url: light.url,
+    dark_logo_url: dark.url,
+  };
 
   if (existing) {
     const { error } = await supabase
       .from("community_settings")
-      .update({
-        name: validated.data.name,
-        description: validated.data.description || null,
-        keywords,
-        address: validated.data.address || null,
-        maps_location: validated.data.mapsLocation || null,
-      })
+      .update(payload)
       .eq("id", existing.id);
 
     if (error) {
       return { success: false, error: "Gagal memperbarui pengaturan" };
     }
   } else {
-    const { error } = await supabase.from("community_settings").insert({
-      name: validated.data.name,
-      description: validated.data.description || null,
-      keywords,
-      address: validated.data.address || null,
-      maps_location: validated.data.mapsLocation || null,
-    });
+    const { error } = await supabase.from("community_settings").insert(payload);
 
     if (error) {
       return { success: false, error: "Gagal membuat pengaturan" };
@@ -91,6 +200,6 @@ export async function updateCommunitySettings(
   }
 
   revalidatePath("/admin/pengaturan");
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // Navbar/Footer logo live in the root layout
   return { success: true, data: null };
 }

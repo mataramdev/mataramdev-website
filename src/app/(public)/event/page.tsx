@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatDateTime } from "@/lib/utils";
+import { EventCard } from "@/components/cards";
+import { CONTAINER, FilterChip, PageHeader, SectionEmpty } from "@/components/ui/brutalist";
 import {
   EVENT_STATUSES,
   EVENT_STATUS_LABELS,
-  eventStatusBadgeClasses,
   eventStatusLabel,
   isEventStatus,
   type EventStatus,
@@ -18,6 +17,18 @@ export const metadata = {
 
 interface EventListPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+interface EventRow {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  image_url: string | null;
+  status: string;
+  start_time: string | null;
+  end_time: string | null;
+  location_name: string | null;
 }
 
 const STATUS_FILTERS: { label: string; value: EventStatus | null }[] = [
@@ -41,11 +52,11 @@ export default async function EventListPage({
   const query = supabase
     .from("events")
     .select(
-      "id, slug, title, excerpt, image_url, status, start_time, location_name",
+      "id, slug, title, excerpt, image_url, status, start_time, end_time, location_name",
     )
     .order("start_time", { ascending: true, nullsFirst: false });
 
-  const { data: events, error } = activeStatus
+  const { data, error } = activeStatus
     ? await query.eq("status", activeStatus)
     : await query;
 
@@ -53,100 +64,55 @@ export default async function EventListPage({
     throw new Error(`Gagal mengambil data event: ${error.message}`);
   }
 
+  const events = (data ?? []) as unknown as EventRow[];
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Event Komunitas
-        </h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          Workshop, sharing session, dan kopdar dari developer &amp; designer
-          Mataram.
-        </p>
-      </header>
+    <div className="bg-background py-16 sm:py-24">
+      <div className={CONTAINER}>
+        <PageHeader
+          badge="Daftar Event"
+          title="Event Komunitas"
+          description="Workshop, sharing session, dan kopdar dari developer & designer Mataram."
+        />
 
-      <nav className="mt-6 flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((filter) => {
-          const isActive = activeStatus === filter.value;
-
-          return (
-            <Link
+        <nav className="mt-8 flex flex-wrap gap-2">
+          {STATUS_FILTERS.map((filter) => (
+            <FilterChip
               key={filter.label}
               href={filter.value ? `/event?status=${filter.value}` : "/event"}
-              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              }`}
+              active={activeStatus === filter.value}
             >
               {filter.label}
-            </Link>
-          );
-        })}
-      </nav>
+            </FilterChip>
+          ))}
+        </nav>
 
-      {!events || events.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        {events.length === 0 ? (
+          <SectionEmpty>
             {activeStatus
               ? `Belum ada event dengan status "${eventStatusLabel(activeStatus)}".`
               : "Belum ada event. Pantau terus ya!"}
-          </p>
-        </div>
-      ) : (
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {events.map((event) => (
-            <li key={event.id}>
-              <Link
-                href={`/event/${event.slug}`}
-                className="group flex h-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition-colors hover:border-blue-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-800"
-              >
-                {event.image_url ? (
-                  <div className="aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={event.image_url}
-                      alt={event.title}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex aspect-video items-center justify-center bg-zinc-100 text-3xl dark:bg-zinc-800">
-                    📅
-                  </div>
-                )}
-
-                <div className="flex flex-1 flex-col gap-2 p-5">
-                  <span
-                    className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-xs font-medium ${eventStatusBadgeClasses(
-                      event.status,
-                    )}`}
-                  >
-                    {eventStatusLabel(event.status)}
-                  </span>
-
-                  <h2 className="text-lg font-semibold text-zinc-900 group-hover:text-blue-600 dark:text-zinc-50 dark:group-hover:text-blue-400">
-                    {event.title}
-                  </h2>
-
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {event.start_time
-                      ? formatDateTime(event.start_time)
-                      : "Waktu belum ditentukan"}
-                    {event.location_name && ` • ${event.location_name}`}
-                  </p>
-
-                  {event.excerpt && (
-                    <p className="line-clamp-3 text-sm text-zinc-600 dark:text-zinc-400">
-                      {event.excerpt}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+          </SectionEmpty>
+        ) : (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={{
+                  slug: event.slug,
+                  title: event.title,
+                  excerpt: event.excerpt,
+                  imageUrl: event.image_url,
+                  status: event.status,
+                  startTime: event.start_time,
+                  endTime: event.end_time,
+                  locationName: event.location_name,
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

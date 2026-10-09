@@ -1,5 +1,14 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { isUuid, oneRelation } from "@/lib/utils";
+import { ProjectCard, type CardMeta } from "@/components/cards";
+import {
+  BTN_SM_RED,
+  CONTAINER,
+  FilterChip,
+  PageHeader,
+  SectionEmpty,
+} from "@/components/ui/brutalist";
 
 export const metadata = {
   title: "Proyek Komunitas — Mataram Dev",
@@ -11,12 +20,26 @@ interface ProjectListPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+interface ProjectListRow {
+  id: string;
+  slug: string;
+  name: string;
+  image_url: string | null;
+  github_url: string | null;
+  demo_url: string | null;
+  project_stacks: { stacks: { name: string } | null }[] | null;
+}
+
 export default async function ProjectListPage({
   searchParams,
 }: ProjectListPageProps) {
   const params = await searchParams;
+  // A malformed id is ignored, like the other list pages ignore an unknown
+  // filter value — a hand-typed `?stack=abc` must not 500 the page.
   const stackParam =
-    typeof params.stack === "string" ? params.stack : undefined;
+    typeof params.stack === "string" && isUuid(params.stack)
+      ? params.stack
+      : undefined;
 
   const supabase = await createClient();
 
@@ -26,8 +49,28 @@ export default async function ProjectListPage({
     .select("id, name")
     .order("name");
 
+  // Filter by stack: the matching project ids come from a separate query.
+  // PostgREST refuses `contains("project_stacks.stack_id", …)` (PGRST108 —
+  // `project_stacks` is a to-many embed, not a column of `projects`), so the
+  // join table is read on its own and the parent rows are filtered by id.
+  let stackProjectIds: string[] | null = null;
+  if (stackParam) {
+    const { data: stackRows, error: stackError } = await supabase
+      .from("project_stacks")
+      .select("project_id")
+      .eq("stack_id", stackParam);
+
+    if (stackError) {
+      throw new Error(
+        `Gagal memfilter proyek berdasarkan stack: ${stackError.message}`,
+      );
+    }
+
+    stackProjectIds = (stackRows ?? []).map((row) => row.project_id);
+  }
+
   // Build project query — only approved projects
-  let query = supabase
+  const query = supabase
     .from("projects")
     .select(
       "id, slug, name, image_url, github_url, demo_url, created_at, project_stacks(stack_id, stacks(name))",
@@ -35,20 +78,21 @@ export default async function ProjectListPage({
     .eq("status", "approved")
     .order("created_at", { ascending: false });
 
-  // Filter by stack if specified
-  if (stackParam) {
-    query = query.contains("project_stacks.stack_id", [stackParam]);
-  }
-
-  const { data: projects, error } = await query;
+  // `id=in.()` matches nothing, which is the right answer for a stack no
+  // project uses yet.
+  const { data, error } = stackProjectIds
+    ? await query.in("id", stackProjectIds)
+    : await query;
 
   if (error) {
     throw new Error(`Gagal mengambil data proyek: ${error.message}`);
   }
 
+  const projects = (data ?? []) as unknown as ProjectListRow[];
+
   // Fetch contributor counts for all displayed projects
-  let contributorCounts: Record<string, number> = {};
-  if (projects && projects.length > 0) {
+  const contributorCounts: Record<string, number> = {};
+  if (projects.length > 0) {
     const projectIds = projects.map((p) => p.id);
     const { data: contribData } = await supabase
       .from("project_contributors")
@@ -64,130 +108,81 @@ export default async function ProjectListPage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Proyek Komunitas
-        </h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          Karya dan proyek dari developer &amp; designer Mataram.
-        </p>
-      </header>
-
-      {/* Stack filter */}
-      {allStacks && allStacks.length > 0 && (
-        <nav className="mt-6 flex flex-wrap gap-2">
-          <Link
-            href="/proyek"
-            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-              !stackParam
-                ? "border-blue-600 bg-blue-600 text-white"
-                : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-            }`}
-          >
-            Semua
-          </Link>
-          {allStacks.map((stack) => (
-            <Link
-              key={stack.id}
-              href={`/proyek?stack=${stack.id}`}
-              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-                stackParam === stack.id
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              }`}
-            >
-              {stack.name}
+    <div className="bg-background py-16 sm:py-24">
+      <div className={CONTAINER}>
+        <PageHeader
+          badge="Showcase"
+          title="Proyek Komunitas"
+          description="Karya dan proyek dari developer & designer Mataram."
+          actions={
+            <Link href="/proyek/baru" className={BTN_SM_RED}>
+              + Kirim Proyek
             </Link>
-          ))}
-        </nav>
-      )}
+          }
+        />
 
-      {/* Project grid */}
-      {!projects || projects.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
-            {stackParam
-              ? "Tidak ada proyek dengan stack ini."
-              : "Belum ada proyek yang disetujui. Kirim proyek pertama kamu!"}
-          </p>
-          <Link
-            href="/proyek/baru"
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Kirim Proyek
-          </Link>
-        </div>
-      ) : (
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
-            // Extract stack names from the joined data
-            const stackNames =
-              project.project_stacks
-                ?.map((ps: { stacks: { name: string }[] }) => ps.stacks?.[0]?.name)
-                .filter(Boolean) || [];
+        {/* Stack filter */}
+        {allStacks && allStacks.length > 0 && (
+          <nav className="mt-8 flex flex-wrap gap-2">
+            <FilterChip href="/proyek" active={!stackParam}>
+              Semua
+            </FilterChip>
+            {allStacks.map((stack) => (
+              <FilterChip
+                key={stack.id}
+                href={`/proyek?stack=${stack.id}`}
+                active={stackParam === stack.id}
+              >
+                {stack.name}
+              </FilterChip>
+            ))}
+          </nav>
+        )}
 
-            return (
-              <li key={project.id}>
-                <Link
-                  href={`/proyek/${project.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition-colors hover:border-blue-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-800"
-                >
-                  {project.image_url ? (
-                    <div className="aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={project.image_url}
-                        alt={project.name}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex aspect-video items-center justify-center bg-zinc-100 text-3xl dark:bg-zinc-800">
-                      🚀
-                    </div>
-                  )}
+        {/* Project grid */}
+        {projects.length === 0 ? (
+          <div className="mt-8">
+            <SectionEmpty>
+              {stackParam
+                ? "Tidak ada proyek dengan stack ini."
+                : "Belum ada proyek yang disetujui. Kirim proyek pertama kamu!"}
+            </SectionEmpty>
+            <div className="mt-6 flex justify-center">
+              <Link href="/proyek/baru" className={BTN_SM_RED}>
+                Kirim Proyek
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => {
+              const stackNames = (project.project_stacks ?? [])
+                .map((ps) => oneRelation(ps.stacks)?.name)
+                .filter((name): name is string => Boolean(name));
 
-                  <div className="flex flex-1 flex-col gap-2 p-5">
-                    <h2 className="text-lg font-semibold text-zinc-900 group-hover:text-blue-600 dark:text-zinc-50 dark:group-hover:text-blue-400">
-                      {project.name}
-                    </h2>
+              const meta: CardMeta[] = [];
+              const count = contributorCounts[project.id];
+              if (count) meta.push({ icon: "users", label: `${count} kontributor` });
+              if (project.github_url) meta.push({ icon: "github", label: "GitHub" });
+              if (project.demo_url) meta.push({ icon: "external", label: "Demo" });
 
-                    {/* Stack badges */}
-                    {stackNames.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {stackNames.map((name) => (
-                          <span
-                            key={name}
-                            className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                          >
-                            {name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Links */}
-                    <div className="mt-auto flex items-center gap-3 pt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                      {contributorCounts[project.id] && (
-                        <span>
-                          👥 {contributorCounts[project.id]} contributor
-                        </span>
-                      )}
-                      {project.github_url && (
-                        <span>📦 GitHub</span>
-                      )}
-                      {project.demo_url && (
-                        <span>🔗 Demo</span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+              return (
+                <ProjectCard
+                  key={project.id}
+                  project={{
+                    slug: project.slug,
+                    name: project.name,
+                    content: null,
+                    imageUrl: project.image_url,
+                    stackNames,
+                    meta,
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

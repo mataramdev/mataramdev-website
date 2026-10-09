@@ -13,10 +13,10 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-black uppercase leading-none text-2xl">
           Pengaturan Komunitas
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           Kelola informasi umum komunitas Mataram Dev.
         </p>
       </div>
@@ -28,6 +28,8 @@ export default async function SettingsPage() {
           keywords: settings?.keywords?.join(", ") || "",
           address: settings?.address || "",
           mapsLocation: settings?.maps_location || "",
+          lightLogoUrl: settings?.light_logo_url || "",
+          darkLogoUrl: settings?.dark_logo_url || "",
         }}
       />
     </div>

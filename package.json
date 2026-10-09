@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
+    "db:seed": "node scripts/seed.mjs",
+    "db:seed:dummy": "node scripts/seed-dummy.mjs",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

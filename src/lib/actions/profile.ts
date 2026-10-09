@@ -5,8 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import {
   profileSchema,
   socialLinkSchema,
-  type ProfileInput,
-  type SocialLinkInput,
 } from "@/lib/validations/profile";
 import type { ActionResult } from "@/types";
 

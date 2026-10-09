@@ -1,9 +1,64 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { pickThumbnail } from "@/lib/thumbnails";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Markdown from "@/components/Markdown";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteUrl, toMetaDescription } from "@/lib/seo";
+import { oneRelation } from "@/lib/utils";
+import Icon from "@/components/ui/icons";
+import {
+  BackLink,
+  BTN_SM_RED,
+  BTN_SM_WHITE,
+  HARD_CARD,
+  initials,
+} from "@/components/ui/brutalist";
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
+}
+
+/** Per-project title/OG/canonical built from the row (Task 9.4 / PRD §5). */
+export async function generateMetadata({
+  params,
+}: ProjectDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("name, content, image_url")
+    .eq("slug", slug)
+    .eq("status", "approved")
+    .maybeSingle();
+
+  if (!project) {
+    return { title: "Proyek tidak ditemukan" };
+  }
+
+  const description = toMetaDescription(project.content);
+  const url = new URL(`/proyek/${slug}`, getSiteUrl());
+
+  return {
+    title: project.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: project.name,
+      description,
+      url,
+      images: project.image_url ? [{ url: project.image_url }] : undefined,
+    },
+    twitter: {
+      card: project.image_url ? "summary_large_image" : "summary",
+      title: project.name,
+      description,
+      images: project.image_url ? [project.image_url] : undefined,
+    },
+  };
 }
 
 export default async function ProjectDetailPage({
@@ -13,12 +68,14 @@ export default async function ProjectDetailPage({
   const supabase = await createClient();
 
   // Fetch project (only approved)
+  // maybeSingle so an unknown/unapproved slug reaches notFound() (404)
+  // instead of throwing on PGRST116 (500) — see artikel/[slug]/page.tsx.
   const { data: project, error } = await supabase
     .from("projects")
     .select("*, project_stacks(stack_id, stacks(name, id))")
     .eq("slug", slug)
     .eq("status", "approved")
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Gagal mengambil data proyek: ${error.message}`);
@@ -34,129 +91,143 @@ export default async function ProjectDetailPage({
     .select("user_id, users(fullname, username, image_url)")
     .eq("project_id", project.id);
 
-  // Extract stacks — Supabase join returns arrays
+  // Extract stacks. `project_stacks` is a to-many embed (array); each nested
+  // `stacks` row is to-one.
   const stacks =
     project.project_stacks
-      ?.map((ps: { stacks: { name: string; id: string }[] }) => ps.stacks?.[0])
+      ?.map((ps: { stacks: { name: string; id: string }[] }) =>
+        oneRelation(ps.stacks),
+      )
       .filter(Boolean) || [];
 
+  // Sampul dari admin, atau foto cadangan dari `public/images/events/`.
+  const cover = project.image_url ?? pickThumbnail("project", project.slug);
+
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12">
-      <Link
-        href="/proyek"
-        className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-      >
-        ← Kembali ke proyek
-      </Link>
+    <article className="bg-background py-16 sm:py-24">
+      <div className="mx-auto w-full max-w-[896px] px-5 sm:px-10">
+        <BackLink href="/proyek">← Kembali ke proyek</BackLink>
 
-      {project.image_url && (
-        <div className="mt-6 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={project.image_url}
-            alt={project.name}
-            className="w-full object-cover"
-          />
-        </div>
-      )}
+        {cover && (
+          <div className="relative mt-8 aspect-video border-[3px] border-[var(--hard-border)] shadow-[10px_10px_0_0_var(--hard-shadow)]">
+            {/* Stored covers carry no dimensions, so the hero gets a fixed 16:9
+                box (no layout shift) and crops the overflow. */}
+            <Image
+              src={cover}
+              alt={project.name}
+              fill
+              sizes="(max-width: 896px) 100vw, 896px"
+              loading="eager"
+              className="object-cover"
+            />
+          </div>
+        )}
 
-      <h1 className="mt-8 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-        {project.name}
-      </h1>
+        <h1 className="mt-8 font-black uppercase leading-none text-3xl sm:text-4xl lg:text-5xl">
+          {project.name}
+        </h1>
 
-      {/* Stacks */}
-      {stacks.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {stacks.map(
-            (stack: { name: string; id: string } | null) =>
-              stack && (
-                <Link
-                  key={stack.id}
-                  href={`/proyek?stack=${stack.id}`}
-                  className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900"
-                >
-                  {stack.name}
-                </Link>
-              ),
-          )}
-        </div>
-      )}
+        {/* Stacks */}
+        {stacks.length > 0 && (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {stacks.map(
+              (stack: { name: string; id: string } | null) =>
+                stack && (
+                  <Link
+                    key={stack.id}
+                    href={`/proyek?stack=${stack.id}`}
+                    className="border-2 border-[var(--hard-border)] bg-brand-yellow px-3 py-1 font-mono text-[11px] font-bold uppercase text-black"
+                  >
+                    {stack.name}
+                  </Link>
+                ),
+            )}
+          </div>
+        )}
 
-      {/* Description */}
-      {project.content && (
-        <div className="mt-8 whitespace-pre-line text-zinc-700 dark:text-zinc-300">
-          {project.content}
-        </div>
-      )}
+        {/* Description. Markdown, like articles: the submission form tells the
+            contributor to format with Markdown (src/components/ProjectForm.tsx). */}
+        {project.content && (
+          <Markdown className="mt-10">{project.content}</Markdown>
+        )}
 
-      {/* Links */}
-      {(project.github_url || project.demo_url) && (
-        <div className="mt-8 flex flex-wrap gap-3">
-          {project.github_url && (
-            <a
-              href={project.github_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-            >
-              📦 Lihat di GitHub
-            </a>
-          )}
-          {project.demo_url && (
-            <a
-              href={project.demo_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-            >
-              🔗 Lihat Demo
-            </a>
-          )}
-        </div>
-      )}
+        {/* Links */}
+        {(project.github_url || project.demo_url) && (
+          <div className="mt-10 flex flex-wrap gap-3">
+            {project.github_url && (
+              <a
+                href={project.github_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={BTN_SM_WHITE}
+              >
+                <Icon name="github" className="size-4" />
+                Lihat di GitHub
+              </a>
+            )}
+            {project.demo_url && (
+              <a
+                href={project.demo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={BTN_SM_RED}
+              >
+                <Icon name="external" className="size-4" />
+                Lihat Demo
+              </a>
+            )}
+          </div>
+        )}
 
-      {/* Contributors */}
-      {contributors && contributors.length > 0 && (
-        <div className="mt-8 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            Contributors
-          </h2>
-          <ul className="mt-4 space-y-3">
-            {contributors.map((c: {
-              user_id: string;
-              users: { fullname?: string | null; username?: string | null; image_url?: string | null }[];
-            }) => {
-              const user = c.users?.[0];
-              return (
-                <li key={c.user_id} className="flex items-center gap-3">
-                  {user?.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={user.image_url}
-                      alt={user.fullname || user.username || "User"}
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-sm text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
-                      {(user?.fullname || user?.username || "?").charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                      {user?.fullname || "Anonymous"}
-                    </p>
-                    {user?.username && (
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        @{user.username}
-                      </p>
+        {/* Contributors */}
+        {contributors && contributors.length > 0 && (
+          <div className={`${HARD_CARD} mt-10 bg-surface-2 p-6`}>
+            <h2 className="font-black uppercase text-lg">Kontributor</h2>
+            <ul className="mt-5 flex flex-col gap-4">
+              {contributors.map((c: {
+                user_id: string;
+                users: {
+                  fullname?: string | null;
+                  username?: string | null;
+                  image_url?: string | null;
+                }[];
+              }) => {
+                const user = oneRelation(c.users);
+                const name = user?.fullname || user?.username || "Anggota";
+
+                return (
+                  <li key={c.user_id} className="flex items-center gap-3">
+                    {user?.image_url ? (
+                      <Image
+                        src={user.image_url}
+                        alt={name}
+                        width={36}
+                        height={36}
+                        className="size-9 border-2 border-[var(--hard-border)] object-cover"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden="true"
+                        className="flex size-9 items-center justify-center border-2 border-[var(--hard-border)] bg-brand-yellow font-mono text-xs font-bold text-black"
+                      >
+                        {initials(name)}
+                      </span>
                     )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+                    <div>
+                      <p className="font-bold text-sm text-foreground">{name}</p>
+                      {user?.username && (
+                        <p className="font-mono text-xs text-muted">
+                          @{user.username}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
     </article>
   );
 }

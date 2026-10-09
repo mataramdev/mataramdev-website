@@ -1,6 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { formatDate, oneRelation } from "@/lib/utils";
 import {
   PROJECT_STATUSES,
   projectStatusBadgeClasses,
@@ -8,6 +9,7 @@ import {
   type ProjectStatus,
 } from "@/lib/projectStatus";
 import ModerationButtons from "./ModerationButtons";
+import Icon from "@/components/ui/icons";
 
 export const metadata = {
   title: "Moderasi Proyek — Admin",
@@ -89,10 +91,10 @@ export default async function AdminProjectsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-black uppercase leading-none text-2xl">
           Moderasi Proyek
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           {counts.pending > 0
             ? `${counts.pending} proyek menunggu review.`
             : "Tidak ada proyek yang menunggu review."}
@@ -105,18 +107,18 @@ export default async function AdminProjectsPage({
           <Link
             key={tab.key}
             href={`/admin/proyek?status=${tab.key}`}
-            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-btn border-[3px] border-[var(--hard-border)] px-4 py-1.5 font-mono text-[11px] font-bold uppercase transition-colors ${
               activeFilter === tab.key
-                ? "border-blue-600 bg-blue-600 text-white"
-                : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                ? "border-[var(--hard-border)] bg-accent-500 text-white"
+                : "border-[var(--hard-border)] text-foreground hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
             }`}
           >
             {tab.label}
             <span
               className={`ml-1.5 text-xs ${
                 activeFilter === tab.key
-                  ? "text-blue-100"
-                  : "text-zinc-500 dark:text-zinc-400"
+                  ? "text-white/80"
+                  : "text-muted"
               }`}
             >
               {counts[tab.key]}
@@ -126,8 +128,8 @@ export default async function AdminProjectsPage({
       </nav>
 
       {projects.length === 0 ? (
-        <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+          <p className="text-muted">
             {activeFilter === "pending"
               ? "Tidak ada proyek yang menunggu review."
               : activeFilter === "all"
@@ -140,13 +142,18 @@ export default async function AdminProjectsPage({
           {projects.map((project) => {
             const stackNames =
               project.project_stacks
-                ?.flatMap((ps) => ps.stacks?.[0]?.name ?? [])
+                ?.map((ps) => oneRelation(ps.stacks)?.name)
                 .filter(Boolean) || [];
 
             const contributors =
               project.project_contributors
-                ?.flatMap((pc) => pc.users?.[0] ?? [])
-                .filter(Boolean) || [];
+                ?.map((pc) => oneRelation(pc.users))
+                .filter(
+                  (
+                    user,
+                  ): user is { fullname: string | null; username: string | null } =>
+                    Boolean(user),
+                ) || [];
 
             const submitter =
               contributors[0]?.fullname ||
@@ -157,20 +164,21 @@ export default async function AdminProjectsPage({
             return (
               <div
                 key={project.id}
-                className="flex gap-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                className="flex gap-4 rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2"
               >
                 {project.image_url ? (
-                  <div className="hidden h-20 w-32 shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:block dark:bg-zinc-800">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="relative hidden h-20 w-32 shrink-0 overflow-hidden rounded-btn bg-surface-3 sm:block dark:bg-surface-3">
+                    <Image
                       src={project.image_url}
                       alt={project.name}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="128px"
+                      className="object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="hidden h-20 w-32 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-2xl sm:flex dark:bg-zinc-800">
-                    🚀
+                  <div className="hidden h-20 w-32 shrink-0 items-center justify-center rounded-btn bg-surface-3 text-muted sm:flex dark:bg-surface-3">
+                    <Icon name="rocket" className="size-7" />
                   </div>
                 )}
 
@@ -178,18 +186,18 @@ export default async function AdminProjectsPage({
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
                       href={`/proyek/${project.slug}`}
-                      className="truncate text-sm font-semibold text-zinc-900 hover:text-blue-600 dark:text-zinc-50 dark:hover:text-blue-400"
+                      className="truncate font-black uppercase text-sm hover:text-teal-600 dark:text-foreground dark:hover:text-teal-300"
                     >
                       {project.name}
                     </Link>
                     <span
-                      className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium ${projectStatusBadgeClasses(project.status)}`}
+                      className={`inline-flex shrink-0 items-center px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${projectStatusBadgeClasses(project.status)}`}
                     >
                       {projectStatusLabel(project.status)}
                     </span>
                   </div>
 
-                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-1 text-xs text-muted">
                     Dikirim oleh {submitter} • {formatDate(project.created_at)}
                     {contributors.length > 0 &&
                       ` • ${contributors.length} contributor`}
@@ -200,7 +208,7 @@ export default async function AdminProjectsPage({
                       {stackNames.map((name) => (
                         <span
                           key={name}
-                          className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                          className="border-2 border-[var(--hard-border)] bg-brand-yellow px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-black dark:bg-brand-yellow dark:text-teal-300"
                         >
                           {name}
                         </span>

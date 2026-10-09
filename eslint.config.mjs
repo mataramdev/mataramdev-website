@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The static site this branch replaced — its vendored scripts are kept as
+    // they were and are not part of the Next.js app.
+    "assets/**",
   ]),
 ]);
 

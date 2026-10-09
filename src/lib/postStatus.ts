@@ -14,10 +14,10 @@ export const POST_STATUS_LABELS: Record<PostStatus, string> = {
   published: "Terbit",
 };
 
+/** Badge neo-brutalist (border 2px + warna solid), sama seperti status lain. */
 export const POST_STATUS_BADGE_CLASSES: Record<PostStatus, string> = {
-  draft: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-  published:
-    "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+  draft: "border-2 border-[var(--hard-border)] bg-brand-gold text-black",
+  published: "border-2 border-[var(--hard-border)] bg-brand-green text-white",
 };
 
 export function isPostStatus(value: string | undefined): value is PostStatus {

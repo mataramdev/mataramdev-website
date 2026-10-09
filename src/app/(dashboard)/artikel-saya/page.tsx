@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -10,6 +11,7 @@ import {
   type PostStatus,
 } from "@/lib/postStatus";
 import PublishDraftButton from "./PublishDraftButton";
+import Icon from "@/components/ui/icons";
 
 export const metadata = {
   title: "Artikel Saya — Mataram Dev",
@@ -38,6 +40,11 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
     params.created === "published" || params.created === "draft"
       ? params.created
       : null;
+  const updated =
+    params.updated === "published" || params.updated === "draft"
+      ? params.updated
+      : null;
+  const deleted = params.deleted === "1";
 
   const requested = typeof params.status === "string" ? params.status : undefined;
   const activeFilter: PostStatus | "all" =
@@ -91,29 +98,29 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="font-black uppercase leading-none text-2xl">
             Artikel Saya
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-sm text-muted">
             Artikel yang sudah terbit dan draf yang belum selesai.
           </p>
         </div>
         <Link
           href="/artikel/baru"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          className="rounded-btn bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
         >
           + Tulis Artikel
         </Link>
       </div>
 
       {created && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">
-          <p className="text-sm font-medium text-green-800 dark:text-green-200">
+        <div className="rounded-card border border-[var(--hard-border)] bg-brand-green p-4 dark:border-[var(--hard-border)] dark:bg-brand-green">
+          <p className="text-sm font-medium text-white">
             {created === "published"
               ? "Artikel berhasil diterbitkan!"
               : "Draf tersimpan!"}
           </p>
-          <p className="mt-1 text-sm text-green-700 dark:text-green-300">
+          <p className="mt-1 text-sm text-white/90">
             {created === "published"
               ? "Artikel kamu sudah tampil di halaman Artikel komunitas."
               : "Draf ini hanya terlihat oleh kamu. Terbitkan kapan saja lewat tombol Terbitkan di bawah."}
@@ -121,14 +128,35 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
         </div>
       )}
 
+      {updated && (
+        <div className="rounded-card border border-[var(--hard-border)] bg-brand-green p-4 dark:border-[var(--hard-border)] dark:bg-brand-green">
+          <p className="text-sm font-medium text-white">
+            Perubahan tersimpan!
+          </p>
+          <p className="mt-1 text-sm text-white/90">
+            {updated === "published"
+              ? "Artikel kamu sudah diperbarui dan tetap tampil di halaman Artikel."
+              : "Artikel ini sekarang berstatus draf, jadi tidak tampil di halaman publik sampai diterbitkan lagi."}
+          </p>
+        </div>
+      )}
+
+      {deleted && (
+        <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2">
+          <p className="text-sm font-medium text-foreground dark:text-foreground">
+            Artikel sudah dihapus.
+          </p>
+        </div>
+      )}
+
       {posts.length === 0 ? (
-        <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+          <p className="text-muted">
             Kamu belum menulis artikel apa pun.
           </p>
           <Link
             href="/artikel/baru"
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="mt-4 inline-block rounded-btn bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
           >
             Tulis Artikel Pertama
           </Link>
@@ -140,18 +168,18 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
               <Link
                 key={tab.key}
                 href={`/artikel-saya?status=${tab.key}`}
-                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-btn border-[3px] border-[var(--hard-border)] px-4 py-1.5 font-mono text-[11px] font-bold uppercase transition-colors ${
                   activeFilter === tab.key
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    ? "border-[var(--hard-border)] bg-accent-500 text-white"
+                    : "border-[var(--hard-border)] text-foreground hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
                 }`}
               >
                 {tab.label}
                 <span
                   className={`ml-1.5 text-xs ${
                     activeFilter === tab.key
-                      ? "text-blue-100"
-                      : "text-zinc-500 dark:text-zinc-400"
+                      ? "text-white/80"
+                      : "text-muted"
                   }`}
                 >
                   {counts[tab.key]}
@@ -161,8 +189,8 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
           </nav>
 
           {visible.length === 0 ? (
-            <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="text-zinc-500 dark:text-zinc-400">
+            <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+              <p className="text-muted">
                 {activeFilter === "all"
                   ? "Belum ada artikel."
                   : `Tidak ada artikel berstatus "${postStatusLabel(activeFilter)}".`}
@@ -176,20 +204,21 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
                 return (
                   <div
                     key={post.id}
-                    className="flex gap-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                    className="flex gap-4 rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2"
                   >
                     {post.image_url ? (
-                      <div className="hidden h-20 w-32 shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:block dark:bg-zinc-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                      <div className="relative hidden h-20 w-32 shrink-0 overflow-hidden rounded-btn bg-surface-3 sm:block dark:bg-surface-3">
+                        <Image
                           src={post.image_url}
                           alt={post.title}
-                          className="h-full w-full object-cover"
+                          fill
+                          sizes="128px"
+                          className="object-cover"
                         />
                       </div>
                     ) : (
-                      <div className="hidden h-20 w-32 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-2xl sm:flex dark:bg-zinc-800">
-                        📝
+                      <div className="hidden h-20 w-32 shrink-0 items-center justify-center rounded-btn bg-surface-3 text-muted sm:flex dark:bg-surface-3">
+                        <Icon name="pen" className="size-7" />
                       </div>
                     )}
 
@@ -198,23 +227,23 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
                         {isPublished ? (
                           <Link
                             href={`/artikel/${post.slug}`}
-                            className="truncate text-sm font-semibold text-zinc-900 hover:text-blue-600 dark:text-zinc-50 dark:hover:text-blue-400"
+                            className="truncate font-black uppercase text-sm hover:text-teal-600 dark:text-foreground dark:hover:text-teal-300"
                           >
                             {post.title}
                           </Link>
                         ) : (
-                          <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                          <span className="truncate font-black uppercase text-sm">
                             {post.title}
                           </span>
                         )}
                         <span
-                          className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium ${postStatusBadgeClasses(post.status)}`}
+                          className={`inline-flex shrink-0 items-center px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${postStatusBadgeClasses(post.status)}`}
                         >
                           {postStatusLabel(post.status)}
                         </span>
                       </div>
 
-                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      <p className="mt-1 text-xs text-muted">
                         {post.category && `${postCategoryLabel(post.category)} • `}
                         {isPublished && post.published_date
                           ? `Terbit ${formatDate(post.published_date)}`
@@ -222,17 +251,23 @@ export default async function MyPostsPage({ searchParams }: MyPostsPageProps) {
                       </p>
 
                       {post.excerpt && (
-                        <p className="mt-2 line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">
+                        <p className="mt-2 line-clamp-2 text-sm text-muted">
                           {post.excerpt}
                         </p>
                       )}
                     </div>
 
-                    <div className="shrink-0">
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <Link
+                        href={`/artikel/${post.slug}/edit`}
+                        className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
+                      >
+                        Edit
+                      </Link>
                       {isPublished ? (
                         <Link
                           href={`/artikel/${post.slug}`}
-                          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                          className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
                         >
                           Lihat
                         </Link>

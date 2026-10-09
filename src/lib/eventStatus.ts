@@ -21,12 +21,15 @@ export const EVENT_STATUS_LABELS: Record<EventStatus, string> = {
   cancelled: "Dibatalkan",
 };
 
+/**
+ * Badge neo-brutalist: teks putih di atas isian solid, semuanya ≥4,5:1
+ * (teal 6,15:1 · merah gelap 4,98:1 · abu 5,0:1 · hampir hitam 17:1).
+ */
 export const EVENT_STATUS_BADGE_CLASSES: Record<EventStatus, string> = {
-  upcoming: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  ongoing:
-    "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  completed: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-  cancelled: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+  upcoming: "border-2 border-[var(--hard-border)] bg-teal-500 text-white",
+  ongoing: "border-2 border-[var(--hard-border)] bg-accent-700 text-white",
+  completed: "border-2 border-[var(--hard-border)] bg-zinc-500 text-white",
+  cancelled: "border-2 border-[var(--hard-border)] bg-brand-ink text-white",
 };
 
 export function isEventStatus(value: string | undefined): value is EventStatus {
