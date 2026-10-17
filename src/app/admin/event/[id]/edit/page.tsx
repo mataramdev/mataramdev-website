@@ -20,13 +20,19 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     notFound();
   }
 
+  const { data: speakerRows } = await supabase
+    .from("event_speakers")
+    .select("name, topic, photo_url")
+    .eq("event_id", event.id)
+    .order("order", { ascending: true });
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-black uppercase leading-none text-2xl">
           Edit Event
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           Perbarui detail event &ldquo;{event.title}&rdquo;.
         </p>
       </div>
@@ -47,6 +53,11 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
           locationName: event.location_name || "",
           locationUrl: event.location_url || "",
           imageUrl: event.image_url || "",
+          speakers: (speakerRows ?? []).map((speaker) => ({
+            name: speaker.name,
+            topic: speaker.topic || "",
+            photoUrl: speaker.photo_url || "",
+          })),
         }}
       />
     </div>

@@ -1,20 +1,154 @@
 @import "tailwindcss";
 
+/*
+ * Tailwind 4 memakai `prefers-color-scheme` untuk varian `dark:` secara bawaan,
+ * padahal aplikasi ini mengganti tema lewat KELAS `.dark` di <html>
+ * (`next-themes` dengan `attribute="class"`). Akibatnya setiap `dark:*`
+ * mengikuti tema SISTEM OPERASI, bukan pilihan pengguna — mis. logo navbar
+ * tetap memakai varian gelap walau pengguna memilih tema terang.
+ *
+ * Variant ini menyambungkannya ke kelas `.dark` supaya `dark:*` dan variabel
+ * token (`--background`, `--surface`, …) bergerak bersamaan.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Token design — sumber angka: ui_design_canva/*.png (dihitung 28 Sep 2026),
+ * dicatat lengkap di docs/DESIGN-BRIEF.md. Palet tambahan diambil apa adanya
+ * dari export HTML terbaru: ui_design_canva/html/Mataram Dev — Wadah
+ * Kolaborasi Talenta Digital Kota Mataram.html (6 Okt 2026).
+ *
+ * Yang sudah memakai token ini: src/components/ui/*, /admin/design, dan
+ * **halaman depan** (`src/app/(public)/page.tsx`) — halaman lain masih memakai
+ * kelas `blue-*` bawaan sampai gilirannya (Task 8.6 tahap 2).
+ */
+
 :root {
+  /* Latar & permukaan (terang) */
   --background: #ffffff;
   --foreground: #171717;
-}
+  --surface: #f3f3f3; /* section selang-seling, terukur */
+  --surface-2: #ffffff; /* kartu di atas surface */
+  --surface-3: #f8f9fa; /* band aktivitas, terukur */
+  --muted: #6b7280; /* TODO belum terukur dari mockup */
+  --line: #e4e4e7;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Bayangan keras khas brutalist: offset solid tanpa blur */
+  --hard-shadow: #171717;
+  --hard-border: #171717;
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #171717; /* terukur dari Home Dark.png */
   --foreground: #ededed;
+  --surface: #0a0a0a; /* terukur */
+  --surface-2: #12121e; /* surface navy, terukur */
+  --surface-3: #1a1a2e; /* band aktivitas versi gelap, terukur */
+  --muted: #858585; /* terukur */
+  --line: #3f3f46;
+
+  --hard-shadow: #000000;
+  --hard-border: #71717a;
+}
+
+
+/*
+ * Warna yang memakai var() harus `@theme inline`, supaya utilitasnya merujuk
+ * variabel di atas (dan ikut berganti saat kelas `dark` ada di <html>).
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, monospace;
+}
+
+/* Warna brand: nilai tetap, bukan var() — sebarannya dihitung dari basis. */
+@theme {
+  /* aksen utama #ff4040 — dipilih pemilik produk */
+  --color-accent-50: #fcf8f8;
+  --color-accent-100: #faebeb;
+  --color-accent-200: #f8d0d0;
+  --color-accent-300: #faaeae;
+  --color-accent-400: #fd8585;
+  --color-accent-500: #ff4040;
+  --color-accent-600: #ff1313;
+  --color-accent-700: #e20303;
+  --color-accent-800: #b30606;
+  --color-accent-900: #8b0707;
+  --color-accent-950: #5f0707;
+
+  /* aksen kedua #086c75 — menggantikan palet teal bawaan Tailwind
+     (0 pemakaian `teal-*` lama di src, dicek sebelum diganti) */
+  --color-teal-50: #f2f9f9;
+  --color-teal-100: #d9f1f3;
+  --color-teal-200: #a6e7ec;
+  --color-teal-300: #66e0eb;
+  --color-teal-400: #19d9eb;
+  --color-teal-500: #086c75;
+  --color-teal-600: #075d65;
+  --color-teal-700: #074d53;
+  --color-teal-800: #073d42;
+  --color-teal-900: #063033;
+  --color-teal-950: #052123;
+}
+
+/*
+ * Palet neo-brutalist halaman depan — disalin dari export HTML desain, jadi
+ * bukan tafsiran. Dipakai sebagai bidang warna penuh (band section, tile
+ * aktivitas, badge), bukan untuk teks kecil.
+ */
+@theme {
+  --color-brand-yellow: #ffe81f; /* hero (terang), tag stack, kartu catatan */
+  --color-brand-blue: #4286f4;
+  --color-brand-orange: #ff6b4a;
+  --color-brand-green: #40a95a;
+  --color-brand-purple: #4f378a;
+  --color-brand-gold: #f7d000;
+  --color-brand-navy: #1a1a2e; /* kartu cerita & band lokasi */
+  --color-brand-footer: #12121e; /* latar footer (mockup) */
+  --color-brand-article: #c5e8ff; /* band artikel (terang) */
+
+  --color-brand-ink: #1d1b20;
+
+  /* Radius dari export HTML desain: kartu 14px, tombol 10px, badge/tag siku. */
+  --radius-card: 14px;
+  --radius-btn: 10px;
+
+  /* Marquee resource: dua baris, arah berlawanan, kecepatan beda. */
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee-reverse: marquee 42s linear infinite reverse;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/*
+ * Tepi marquee dibuat memudar supaya item tidak terpotong keras. Ditulis
+ * sebagai utility (bukan class arbitrary di JSX) supaya dipakai konsisten dan
+ * prefiks -webkit-nya tidak terlupa.
+ */
+@utility marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 5%,
+    #000 95%,
+    transparent
+  );
 }
 
 body {

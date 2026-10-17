@@ -4,13 +4,30 @@ import {
   timestamp,
   uuid,
   integer,
+  boolean,
   pgEnum,
+  index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // ─── Enums ────────────────────────────────────────────────
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "contributor"]);
+
+/**
+ * Status persetujuan pendaftaran.
+ *
+ * Akun baru masuk sebagai `pending` (lihat `approval.sql` + handle_new_user) dan
+ * TIDAK bisa login sampai admin menyetujuinya lewat /admin/users. Ini terpisah
+ * dari `is_active`: `pending` = belum pernah disetujui, sedangkan `is_active`
+ * false = sengaja dinonaktifkan admin setelah disetujui. Karena itu pesan ke
+ * pengguna bisa berbeda ("menunggu persetujuan" vs "akun dinonaktifkan").
+ */
+export const approvalStatusEnum = pgEnum("approval_status", [
+  "pending",
+  "approved",
+  "rejected",
+]);
 
 export const eventStatusEnum = pgEnum("event_status", [
   "upcoming",
@@ -51,6 +68,16 @@ export const users = pgTable(
     username: text("username").unique(),
     email: text("email").notNull().unique(),
     role: userRoleEnum("role").notNull().default("contributor"),
+    // Task 9.2 (PRD §4.1): "nonaktifkan akun". Enforced at login and in the
+    // dashboard/admin layouts; `role`/`is_active` are NOT in the UPDATE grant
+    // — admin changes go through the SECURITY DEFINER RPCs in policies.sql.
+    isActive: boolean("is_active").notNull().default(true),
+    // Registrasi tidak lagi langsung bisa dipakai: default `pending`, dan
+    // admin menyetujui/menolak dari /admin/users. Tidak ada di daftar kolom
+    // UPDATE yang di-grant (policies.sql §1) — perubahannya lewat RPC admin.
+    approvalStatus: approvalStatusEnum("approval_status")
+      .notNull()
+      .default("pending"),
     imageUrl: text("image_url"),
     bio: text("bio"),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -115,6 +142,33 @@ export const eventRsvp = pgTable(
   ]
 );
 
+// ─── Event Speakers ───────────────────────────────────────
+//
+// Pembicara per event (PRD: kolom baru untuk event speaker). Keputusan desain
+// data: nama + foto bebas — TIDAK ada foreign key ke `users`, jadi pembicara
+// non-anggota tetap bisa dicatat. `user_id` hanya uuid opsional (tanpa FK)
+// yang menautkan ke akun anggota SAJA supaya admin bisa menandai "buat juga
+// kontributor proyek"; mengosongkannya tidak masalah.
+export const eventSpeakers = pgTable(
+  "event_speakers",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    photoUrl: text("photo_url"),
+    topic: text("topic"),
+    // Opsional & tanpa FK (lihat catatan di atas).
+    userId: uuid("user_id"),
+    order: integer("order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index("event_speakers_event_idx").on(table.eventId)]
+);
+
 // ─── Activities ───────────────────────────────────────────
 
 export const activities = pgTable("activities", {
@@ -137,6 +191,12 @@ export const projects = pgTable("projects", {
   githubUrl: text("github_url"),
   demoUrl: text("demo_url"),
   status: projectStatusEnum("status").notNull().default("pending"),
+  // RLS anchor (src/lib/db/policies.sql): the submitter must be able to read
+  // their own row back while it is still `pending` — the contributor row does
+  // not exist yet, and INSERT ... RETURNING rows must pass the SELECT policy.
+  createdBy: uuid("created_by")
+    .notNull()
+    .references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -214,6 +274,9 @@ export const posts = pgTable("posts", {
     .references(() => users.id),
   status: postStatusEnum("status").notNull().default("draft"),
   category: text("category"),
+  // Task 9.6 (PRD §4.5 "kategori/tag"): free-form tags for cross-category
+  // filtering. Stored as a text[]; the article list filters with `contains`.
+  tags: text("tags").array(),
   publishedDate: timestamp("published_date", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

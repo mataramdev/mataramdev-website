@@ -1,12 +1,67 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { pickThumbnail } from "@/lib/thumbnails";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { formatDate, oneRelation } from "@/lib/utils";
 import { postCategoryLabel } from "@/lib/postStatus";
+import { getSiteUrl, toMetaDescription } from "@/lib/seo";
 import Markdown from "@/components/Markdown";
+import {
+  BackLink,
+  CATEGORY_TAG,
+  HARD_CARD,
+  NEO_BADGE,
+  initials,
+} from "@/components/ui/brutalist";
 
 interface ArticleDetailPageProps {
   params: Promise<{ slug: string }>;
+}
+
+/** Per-article title/OG/canonical built from the row (Task 9.4 / PRD §5). */
+export async function generateMetadata({
+  params,
+}: ArticleDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+
+  // maybeSingle: a missing/withdrawn article must give a clean 404 page, not
+  // crash metadata generation with a thrown error.
+  const { data: post } = await supabase
+    .from("posts")
+    .select("title, excerpt, content, image_url, published_date")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (!post) {
+    return { title: "Artikel tidak ditemukan" };
+  }
+
+  const description = toMetaDescription(post.excerpt || post.content);
+  const url = new URL(`/artikel/${slug}`, getSiteUrl());
+
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description,
+      url,
+      publishedTime: post.published_date ?? undefined,
+      images: post.image_url ? [{ url: post.image_url }] : undefined,
+    },
+    twitter: {
+      card: post.image_url ? "summary_large_image" : "summary",
+      title: post.title,
+      description,
+      images: post.image_url ? [post.image_url] : undefined,
+    },
+  };
 }
 
 export default async function ArticleDetailPage({
@@ -15,12 +70,16 @@ export default async function ArticleDetailPage({
   const { slug } = await params;
   const supabase = await createClient();
 
+  // maybeSingle, not single: `.single()` answers a PGRST116 error when no row
+  // matches, which this page turns into a thrown error (500) before it can
+  // reach notFound(). A withdrawn or misspelled slug must be a 404, both for
+  // visitors and for search crawlers.
   const { data: post, error } = await supabase
     .from("posts")
     .select("*, users(fullname, username, image_url, bio)")
     .eq("slug", slug)
     .eq("status", "published")
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Gagal mengambil detail artikel: ${error.message}`);
@@ -30,88 +89,113 @@ export default async function ArticleDetailPage({
     notFound();
   }
 
-  // Supabase returns a to-one join as an array.
-  const author = (
+  const author = oneRelation(
     post.users as
-      | { fullname: string | null; username: string | null; image_url: string | null; bio: string | null }[]
-      | null
-  )?.[0];
+      | {
+          fullname: string | null;
+          username: string | null;
+          image_url: string | null;
+          bio: string | null;
+        }[]
+      | null,
+  );
+  const authorName = author?.fullname || author?.username || "Anonim";
+
+  // Sampul dari penulis, atau foto cadangan dari `public/images/content/`.
+  const cover = post.image_url ?? pickThumbnail("article", post.slug);
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12">
-      <Link
-        href="/artikel"
-        className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-      >
-        ← Kembali ke artikel
-      </Link>
+    <article className="bg-background py-16 sm:py-24">
+      <div className="mx-auto w-full max-w-[896px] px-5 sm:px-10">
+        <BackLink href="/artikel">← Kembali ke artikel</BackLink>
 
-      {post.category && (
-        <div className="mt-6">
-          <Link
-            href={`/artikel?kategori=${post.category}`}
-            className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900"
-          >
-            {postCategoryLabel(post.category)}
-          </Link>
-        </div>
-      )}
-
-      <h1 className="mt-4 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-        {post.title}
-      </h1>
-
-      <div className="mt-4 flex items-center gap-3">
-        {author?.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={author.image_url}
-            alt={author.fullname || author.username || "Penulis"}
-            className="h-9 w-9 rounded-full object-cover"
-          />
-        ) : (
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-sm text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
-            {(author?.fullname || author?.username || "?")
-              .charAt(0)
-              .toUpperCase()}
+        {post.category && (
+          <div className="mt-8">
+            <Link
+              href={`/artikel?kategori=${post.category}`}
+              className={`${NEO_BADGE} text-white ${
+                CATEGORY_TAG[post.category] ?? "bg-zinc-500"
+              }`}
+            >
+              {postCategoryLabel(post.category)}
+            </Link>
           </div>
         )}
-        <div>
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            {author?.fullname || author?.username || "Anonim"}
-          </p>
-          {post.published_date && (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {formatDate(post.published_date)}
-            </p>
+
+        {post.tags && post.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {post.tags.map((tag: string) => (
+              <Link
+                key={tag}
+                href={`/artikel?tag=${encodeURIComponent(tag)}`}
+                className="font-mono text-xs text-muted hover:text-accent-500"
+              >
+                #{tag}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        <h1 className="mt-5 font-black uppercase leading-none text-3xl sm:text-4xl lg:text-5xl">
+          {post.title}
+        </h1>
+
+        <div className="mt-6 flex items-center gap-3">
+          {author?.image_url ? (
+            <Image
+              src={author.image_url}
+              alt={authorName}
+              width={40}
+              height={40}
+              className="size-10 border-2 border-[var(--hard-border)] object-cover"
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              className="flex size-10 items-center justify-center border-2 border-[var(--hard-border)] bg-brand-yellow font-mono text-xs font-bold text-black"
+            >
+              {initials(authorName)}
+            </span>
           )}
+          <div>
+            <p className="font-black text-sm text-foreground">{authorName}</p>
+            {post.published_date && (
+              <p className="font-mono text-xs text-muted">
+                {formatDate(post.published_date)}
+              </p>
+            )}
+          </div>
         </div>
+
+        {cover && (
+          <div className="relative mt-8 aspect-video border-[3px] border-[var(--hard-border)] shadow-[10px_10px_0_0_var(--hard-shadow)]">
+            {/* Stored covers carry no dimensions, so the hero gets a fixed 16:9
+                box (no layout shift) and crops the overflow. */}
+            <Image
+              src={cover}
+              alt={post.title}
+              fill
+              sizes="(max-width: 896px) 100vw, 896px"
+              loading="eager"
+              className="object-cover"
+            />
+          </div>
+        )}
+
+        {post.excerpt && (
+          <p
+            className={`${HARD_CARD} mt-10 bg-surface-2 p-6 text-lg leading-snug text-muted`}
+          >
+            {post.excerpt}
+          </p>
+        )}
+
+        {post.content ? (
+          <Markdown className="mt-10">{post.content}</Markdown>
+        ) : (
+          <p className="mt-10 text-muted">Artikel ini belum punya isi.</p>
+        )}
       </div>
-
-      {post.image_url && (
-        <div className="mt-8 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.image_url}
-            alt={post.title}
-            className="w-full object-cover"
-          />
-        </div>
-      )}
-
-      {post.excerpt && (
-        <p className="mt-8 border-l-4 border-zinc-300 pl-4 text-lg text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
-          {post.excerpt}
-        </p>
-      )}
-
-      {post.content ? (
-        <Markdown className="mt-8">{post.content}</Markdown>
-      ) : (
-        <p className="mt-8 text-zinc-500 dark:text-zinc-400">
-          Artikel ini belum punya isi.
-        </p>
-      )}
     </article>
   );
 }

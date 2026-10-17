@@ -44,17 +44,17 @@ export default function ResourceRow({
   };
 
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex flex-col gap-1 rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-xl dark:bg-zinc-800">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-btn bg-surface-3 text-xl dark:bg-surface-3">
           {resourceIcon(category, icon)}
         </span>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
+          <p className="truncate text-sm font-medium text-foreground">
             {name}
           </p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted">
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${resourceCategoryBadgeClasses(category)}`}
             >
@@ -69,14 +69,14 @@ export default function ResourceRow({
         <div className="flex shrink-0 items-center gap-2">
           <a
             href={`/resource/${id}/download`}
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
           >
             Unduh
           </a>
           <button
             onClick={remove}
             disabled={isPending}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+            className="rounded-btn border border-accent-500 px-3 py-1.5 text-xs font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-accent-700 dark:text-accent-500 dark:hover:bg-accent-950"
           >
             {isPending ? "..." : "Hapus"}
           </button>
@@ -84,7 +84,7 @@ export default function ResourceRow({
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-xs text-accent-600 dark:text-accent-400">{error}</p>
       )}
     </div>
   );

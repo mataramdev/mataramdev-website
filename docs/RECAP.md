@@ -1,7 +1,7 @@
 # 📋 RECAP - Mataram Dev Project Progress
 
-**Terakhir diupdate:** 21 September 2026
-**Status:** ✅ Semua task (Phase 1-4) selesai — menunggu verifikasi end-to-end dengan kredensial Supabase asli
+**Terakhir diupdate:** 24 September 2026
+**Status:** ✅ Semua task (Phase 1-4) + Phase 5 (RLS & kesiapan deploy) selesai dan terverifikasi terhadap Supabase asli. Sisa: keputusan auth + deploy Vercel.
 **Phase Aktual:** —
 
 ---
@@ -15,6 +15,7 @@
 | Dikerjakan | 0 |
 | Belum dikerjakan | 0 |
 | Persentase | **100%** |
+| Phase 5-6 (di luar roadmap) | ✅ RLS + bucket + kolom `created_by` (Phase 5) · isi `stacks` + verifikasi putaran kedua (Phase 6) |
 
 ---
 
@@ -482,9 +483,10 @@ mataram-dev/
     │   │   ├── client.ts              ✅
     │   │   └── middleware.ts          ✅
     │   ├── db/
-    │   │   ├── schema.ts              ✅ 13 tabel
+    │   │   ├── schema.ts              ✅ 13 tabel + projects.created_by
     │   │   ├── index.ts               ✅ Drizzle client
-    │   │   └── trigger.sql            ✅ Auth trigger
+    │   │   ├── trigger.sql            ✅ Auth trigger
+    │   │   └── policies.sql           ✅ RLS + storage policies (idempoten)
     │   ├── validations/
     │   │   ├── auth.ts                ✅
     │   │   ├── profile.ts             ✅
@@ -562,7 +564,9 @@ mataram-dev/
 | Bucket Artikel | Cover di bucket `posts/` (path `covers/`) | Konsisten dengan pemisahan `events/` dan `projects/` |
 | Build | `.codegraph/` masuk `.gitignore` | Symlink tooling lokal bikin Turbopack panic saat memproses `globals.css` |
 | Download Resource | Link publik lewat route handler `/resource/[id]/download`, bukan langsung ke URL storage | Storage-nya public, tapi hanya request yang lewat sini yang bisa dihitung; `download_count` di-increment di handler lalu redirect 302 ke file |
-| Hitungan Unduhan | Best-effort: kalau `UPDATE` ditolak (RLS belum di-setup), file tetap terkirim dan error cuma di-log | Angka statistik tidak boleh bikin fitur unduh mati |
+| Hitungan Unduhan | RPC `increment_download_count()` (SECURITY DEFINER) dipanggil route handler tanpa sesi; tetap best-effort — kalau RPC ditolak, file tetap terkirim dan error cuma di-log | anon sengaja TIDAK diberi UPDATE di `free_resources`, jadi counter tidak pernah jadi pintu tulis SQL publik — dan angka statistik tidak boleh bikin fitur unduh mati |
+| Otorisasi Database | RLS lewat `src/lib/db/policies.sql` (idempoten): anon read-only, tulis hanya via `authenticated` + `is_admin()` / baris milik sendiri, `users.email` di-revoke kolom demi kolom | Anon key ada di bundle browser — tanpa RLS semua tabel (termasuk hapus `users`) terbuka penuh untuk siapa pun |
+| Owner Proyek | Kolom `projects.created_by` (NOT NULL, FK → users) + policy SELECT/INSERT terikat pembuat | `createProject` membaca balik baris baru dengan `.select("id")`, dan baris `RETURNING` wajib lolos policy SELECT — tanpa kolom ini submit proyek selalu gagal. `WITH CHECK (created_by = auth.uid())` sekaligus menutup celah klaim kontribusi ke proyek pending orang lain |
 | Batas Upload | `next.config.ts` → `experimental.serverActions.bodySizeLimit = "12mb"` | Default Server Action cuma 1MB, jadi file resource (ZIP/PDF) ditolak **sebelum** action-nya jalan. Ini juga memperbaiki upload event/proyek/artikel yang selama ini terbatas 1MB |
 | Hapus Resource | Baris DB dulu, file storage kemudian (+ rollback upload kalau insert gagal) | Baris adalah sumber kebenaran; kegagalan storage tidak boleh menyisakan resource yang tidak bisa dihapus dari UI |
 
@@ -570,12 +574,30 @@ mataram-dev/
 
 ## ⚠️ Yang Perlu Dilakukan Sebelum Deploy
 
-1. **Run SQL trigger** di Supabase Dashboard → SQL Editor (copy dari `src/lib/db/trigger.sql`)
-2. **Setup `.env.local`** dengan credentials Supabase
-3. **Run `pnpm db:push`** untuk sync schema ke database
-4. **Buat Supabase Storage buckets**: `events`, `projects`, `posts`, `resources`, `avatars` (semua public read; `posts` dipakai cover artikel, `resources` dipakai file resource di path `files/`)
-5. **Setup RLS policies** di Supabase untuk semua tabel — penting untuk moderasi, karena `moderateProject` mengandalkan query dari server + pengecekan role. Untuk Resource Center, policy yang dibutuhkan: `SELECT` publik di `free_resources`, `UPDATE` untuk `download_count` (dipanggil route handler download **tanpa sesi** — kalau `UPDATE` dikunci, angka unduhan diam-diam tidak bertambah), plus `INSERT`/`DELETE` untuk admin dan `DELETE` di storage bucket `resources`
-6. **Isi tabel `stacks`** lewat `/admin/stack` — form submit proyek butuh minimal satu stack, dan tanpa data stack form-nya tidak bisa dikirim
+**Sudah dijalankan & terverifikasi** (signup asli, RLS diuji sebagai anon/member/admin, data tes sudah dibersihkan):
+
+1. ✅ **`src/lib/db/trigger.sql`** — terbukti lewat signup sungguhan: `public.users` terisi otomatis oleh `on_auth_user_created` (role default `contributor`).
+2. ✅ **`.env.local`** — terisi kredensial asli (Project URL + anon key + `DATABASE_URL` session pooler 5432).
+3. ✅ **`pnpm db:push`** — 13 tabel + semua enum + kolom baru `projects.created_by`.
+4. ✅ **Storage buckets**: `events`, `projects`, `posts`, `resources` (public; `avatars` tidak dibuat karena tidak ada kode yang memakainya).
+5. ✅ **RLS**: `psql "$DATABASE_URL" -f src/lib/db/policies.sql` — 13/13 tabel aktif, 33 policy + 6 policy storage, anon read-only, `users.email` terkunci, semua route publik tetap 200 setelah kunci dipasang.
+
+Tambahan dari putaran verifikasi kedua (24 September 2026):
+
+6. ✅ **Tabel `stacks` terisi** — 18 stack awal masuk lewat jalur tulis yang sama dengan `/admin/stack` (admin → 201; member → 403, terbukti ditolak RLS). Tidak ada lagi alasan form submit proyek kosong.
+7. ✅ **RSVP diuji penuh** — buat event (admin 201) → member RSVP `going` → hitungan publik anon = 1 → batalkan `cancelled` → hitungan 0 → daftar ulang. Angka itu benar-benar tampil di halaman publik: detail event merender "**1 orang sudah daftar**". Member lain yang mencoba mengubah RSVP orang: **0 baris** tersentuh.
+8. ✅ **Tulis artikel diuji penuh** — draf tidak terlihat anon (0 baris) tapi terbaca pemiliknya, lalu `publishPost` menaikkan status → anon langsung melihatnya, dan artikel muncul di `/artikel`. Member lain tidak bisa menyunting artikel orang (0 baris).
+9. ✅ **Urutan FAQ diuji dengan database sungguhan** — `src/lib/faq.ts` dites sebagai fungsi murni (9 pemeriksaan, lewat `node --experimental-strip-types`): null selalu terakhir, tie dipecah id, input tidak dimutasi, `faqOrderUpdates` hanya menulis baris yang berubah, `moveFaqRow` tidak error di ujung daftar dan memperbaiki angka duplikat. Lalu angka sengaja dirusak jadi `[5, 5, NULL]` di DB → dijalankan lewat fungsi app → jadi `0, 1, 2`; hapus baris tengah → tetap `0, 1` tanpa gap.
+10. ✅ **CRUD admin diuji lewat jalur server action** — stack (tambah/ganti nama/hapus termasuk melepas `project_stacks` lebih dulu), event (edit + ganti status), FAQ (tambah/edit/hapus/urutan). Semua penolakan non-admin tercatat: member/anon 403–42501, atau 0 baris tersentuh.
+
+**Masih perlu sebelum deploy beneran:**
+
+1. **Putuskan "Confirm email"** di Supabase Auth → Sign In / Providers → Email. Sekarang **ON tanpa SMTP**, jadi pendaftar baru mendapat `email_not_confirmed` dan tidak bisa login (saat verifikasi tadi, akun test di-confirm manual via service role). Untuk tahap ini: matikan, atau pasang SMTP (Resend dsb.).
+2. **Rotate `service_role` key** — key itu pernah ter-paste di chat.
+3. **Vercel**: import fork `gper00/mataramdev-website` → production branch **`nextjs-app`**, root directory default, env cukup 2 (`NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`), lalu set Site URL + redirect Supabase Auth ke domain Vercel.
+   - PR #5 di-merge oleh maintainer ke branch **`nextjs-app`, bukan `main`** (`main` masih situs statis). Jadi deploy harus menunjuk branch itu; tayang di `main` nanti butuh satu PR `nextjs-app → main` lagi.
+4. Catatan Vercel: `bodySizeLimit` 12MB tidak berlaku di serverless (batas ±4,5MB) — file resource besar perlu upload langsung ke storage (signed URL) kalau itu sudah wajib.
+5. **PR #6** (`Kunci database dengan RLS + kolom projects.created_by`) masih OPEN menunggu review — itu yang membawa `policies.sql` ke repo.
 
 ---
 
@@ -583,7 +605,7 @@ mataram-dev/
 
 Semua task Phase 1-4 sudah selesai, jadi yang tersisa adalah pekerjaan di luar roadmap:
 
-1. **Verifikasi end-to-end** dengan kredensial Supabase asli. Status per halaman ada di bagian "Belum Pernah Diverifikasi" di bawah.
+1. ~~**Verifikasi end-to-end**~~ ✅ — RLS, submit proyek, moderasi, RSVP, tulis artikel, CRUD admin, upload, dan unduhan diuji dengan kredensial asli. Yang belum: klik form dari browser sungguhan (di mesin ini tidak ada browser) dan area yang belum punya UI sama sekali.
 2. **Halaman publik yang masih 404** padahal sudah dirujuk Navbar/Footer: `/anggota` dan `/tentang`.
 3. **Landing page belum lengkap** menurut PRD §3.1: event terbaru, featured projects, resource gratis, artikel, dan FAQ belum jadi section — sekarang masih quick links + peta.
 4. **Artikel belum bisa diedit/dihapus**, dan moderasi artikel belum ada (butuh status `pending` di enum `post_status`).
@@ -591,16 +613,20 @@ Semua task Phase 1-4 sudah selesai, jadi yang tersisa adalah pekerjaan di luar r
 
 ---
 
-## 🧪 Belum Pernah Diverifikasi (perlu kredensial Supabase asli)
+## 🧪 Cakupan Verifikasi (terhadap Supabase asli)
 
-Semua route sudah dicek status HTTP-nya dengan backend stub yang bisa dikendalikan (data / kosong / mati), tapi bagian yang butuh sesi login atau mutasi database belum pernah dieksekusi:
+Route dicek status HTTP-nya, dan mutasi database diuji langsung terhadap Supabase asli — **tanpa sesi browser** (di mesin ini tidak ada browser): panggilan dilewatkan ke PostgREST/storage API persis seperti yang dilakukan server action, memakai akun sungguhan (member non-admin dan admin). Halaman publik juga dirender sungguhan lewat `pnpm start` dengan data nyata:
 
 | Area | Sudah dibuktikan | Belum dibuktikan |
 |------|------------------|------------------|
-| `/faq` publik | Rendered dengan 3 row (urutan + nomor 01/02/03 + accordion), empty state, dan error saat backend mati — pakai stub PostgREST | — |
-| FAQ admin | Route guard 302 → `/login`, tipe, kompilasi | `createFaq` / `updateFaq` / `deleteFaq` / `moveFaqItem` belum pernah jalan; tombol ▲▼ belum pernah dipakai |
-| Resource | Route guard, error vs 404 di endpoint unduhan | Upload file, `download_count` bertambah, hapus resource + file storage |
-| Event / Proyek / Artikel | Route guard, error boundary vs empty state | Render dengan data nyata, RSVP, submit proyek, moderasi, tulis artikel |
+| `/faq` publik | Render sungguhan dengan row asli (accordion bernomor 01/02/03), empty state, dan error saat backend mati — pakai stub PostgREST; urutan hasil renumber tampil benar | Klik tombol ▲▼ dari browser (logika + efek DB-nya sendiri sudah diuji) |
+| FAQ admin | `createFaq` (insert `order: null` → dinomori di bawah), `updateFaq`, `deleteFaq` (+ renumber tanpa gap), `moveFaqItem` — semuanya dijalankan terhadap DB asli; angka rusak `[5, 5, NULL]` dibetulkan jadi `0, 1, 2`; fungsi murni `src/lib/faq.ts` lolos 9 pemeriksaan | Klik tombol dari browser |
+| RSVP | Buat event (admin 201) → RSVP member `going` → hitungan anon 1 → `cancelled` → 0 → daftar ulang `going`; halaman detail merender "**1 orang sudah daftar**"; member lain 0 baris tersentuh; anon 401/42501; DELETE tidak punya policy → 0 baris | Klik tombol join dari browser |
+| Artikel | Draf tidak terlihat anon (0 baris) tapi terbaca pemiliknya; `publishPost` → anon langsung melihatnya dan muncul di `/artikel`; member lain tidak bisa menyunting (0 baris) | Form `/artikel/baru` diklik dari browser; upload cover |
+| Resource | Upload asli ke bucket `resources` (admin ✓, member ditolak ✓), `download_count` 0→2 lewat endpoint unduhan sungguhan, hapus file + baris ✓, 404 id palsu ✓ | Form `/admin/resource` diklik dari browser |
+| Event / Proyek / Artikel | Submit proyek end-to-end (insert→contributor→stack link, 201 semua), flip moderasi pending→approved terlihat anon, admin buat/edit event, member ditolak semua (403/0 baris). Halaman event + artikel dirender dengan data nyata | Klik dari browser |
+| Stack admin | Tambah, ganti nama, hapus — termasuk kasus stack yang sedang dipakai: lepas `project_stacks` dulu (204) lalu hapus stack (204), sisa `project_stacks` = 0 | Klik dari browser |
+| Register / Login | Signup asli → trigger mengisi `public.users` (role `contributor`), email dikonfirmasi, login dapat token; halaman `(auth)` 200 | Klik login/register dari browser (cookie sesi Next) |
 
 ## ⚠️ Gap yang Diketahui (bukan bagian task manapun)
 

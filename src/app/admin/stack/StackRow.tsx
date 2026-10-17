@@ -50,7 +50,7 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
   };
 
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex flex-col gap-1 rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2">
       <div className="flex items-center gap-3">
         {isEditing ? (
           <input
@@ -67,15 +67,15 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
             autoFocus
             maxLength={50}
             disabled={isPending}
-            className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+            className="min-w-0 flex-1 rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3 py-1.5 text-sm text-foreground focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-[var(--hard-border)] dark:bg-surface-3 dark:text-foreground"
           />
         ) : (
-          <span className="min-w-0 flex-1 truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
+          <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
             {name}
           </span>
         )}
 
-        <span className="shrink-0 text-xs text-zinc-500 dark:text-zinc-400">
+        <span className="shrink-0 text-xs text-muted">
           {usageCount > 0 ? `${usageCount} proyek` : "belum dipakai"}
         </span>
 
@@ -85,7 +85,7 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
               <button
                 onClick={save}
                 disabled={isPending}
-                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-btn bg-accent-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isPending ? "..." : "Simpan"}
               </button>
@@ -96,7 +96,7 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
                   setError(null);
                 }}
                 disabled={isPending}
-                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
               >
                 Batal
               </button>
@@ -105,7 +105,7 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
             <button
               onClick={() => setIsEditing(true)}
               disabled={isPending}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
             >
               Ganti Nama
             </button>
@@ -114,7 +114,7 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
           <button
             onClick={remove}
             disabled={isPending}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+            className="rounded-btn border border-accent-500 px-3 py-1.5 text-xs font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-accent-700 dark:text-accent-500 dark:hover:bg-accent-950"
           >
             {isPending ? "..." : "Hapus"}
           </button>
@@ -122,7 +122,7 @@ export default function StackRow({ id, name, usageCount }: StackRowProps) {
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-xs text-accent-600 dark:text-accent-400">{error}</p>
       )}
     </div>
   );

@@ -1,13 +1,22 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import {
+  BTN_SM_RED,
+  CONTAINER,
+  FilterChip,
+  HARD_CARD,
+  NEO_BADGE,
+  PageHeader,
+  RESOURCE_TAG,
+  SectionEmpty,
+} from "@/components/ui/brutalist";
 import {
   RESOURCE_CATEGORIES,
   RESOURCE_CATEGORY_LABELS,
   isResourceCategory,
-  resourceCategoryBadgeClasses,
   resourceCategoryLabel,
-  resourceIcon,
+  resourceFallbackIcon,
 } from "@/lib/resourceCategory";
+import Icon from "@/components/ui/icons";
 
 export const metadata = {
   title: "Resource Gratis — Mataram Dev",
@@ -63,87 +72,88 @@ export default async function ResourceCenterPage({
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Resource Gratis
-        </h1>
-        <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
-          Cheatsheet, template, dan materi belajar yang dibagikan gratis oleh
-          anggota komunitas. Unduh langsung tanpa perlu daftar akun.
-        </p>
-      </header>
+    <div className="bg-background py-16 sm:py-24">
+      <div className={CONTAINER}>
+        <PageHeader
+          badge="Open Source"
+          title="Resource Gratis"
+          description="Cheatsheet, template, dan materi belajar yang dibagikan gratis oleh anggota komunitas. Unduh langsung tanpa perlu daftar akun."
+        />
 
-      <nav className="mt-6 flex flex-wrap gap-2">
-        {filters.map((filter) => {
-          const isActive = activeCategory === filter.value;
-
-          return (
-            <Link
+        <nav className="mt-8 flex flex-wrap gap-2">
+          {filters.map((filter) => (
+            <FilterChip
               key={filter.label}
               href={
                 filter.value
                   ? `/resource?kategori=${filter.value}`
                   : "/resource"
               }
-              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              }`}
+              active={activeCategory === filter.value}
             >
               {filter.label}
-            </Link>
-          );
-        })}
-      </nav>
+            </FilterChip>
+          ))}
+        </nav>
 
-      {resources.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        {resources.length === 0 ? (
+          <SectionEmpty>
             {activeCategory
               ? `Belum ada resource kategori "${resourceCategoryLabel(activeCategory)}".`
               : "Belum ada resource yang dibagikan. Nantikan ya!"}
-          </p>
-        </div>
-      ) : (
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {resources.map((resource) => (
-            <li key={resource.id}>
-              <div className="flex h-full flex-col rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-blue-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-800">
+          </SectionEmpty>
+        ) : (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {resources.map((resource) => (
+              <div
+                key={resource.id}
+                className={`${HARD_CARD} flex h-full flex-col bg-surface-2 p-5`}
+              >
                 <div className="flex items-start gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-2xl dark:bg-zinc-800">
-                    {resourceIcon(resource.category, resource.icon)}
+                  <span
+                    aria-hidden="true"
+                    className="flex size-11 shrink-0 items-center justify-center border-2 border-[var(--hard-border)] bg-brand-yellow text-2xl"
+                  >
+                    {resource.icon ? (
+                      resource.icon
+                    ) : (
+                      <Icon
+                        name={resourceFallbackIcon(resource.category)}
+                        className="size-6"
+                      />
+                    )}
                   </span>
 
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                    <h2 className="font-black uppercase leading-tight text-base">
                       {resource.name}
                     </h2>
                     <span
-                      className={`mt-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${resourceCategoryBadgeClasses(resource.category)}`}
+                      className={`${NEO_BADGE} mt-2 text-white ${
+                        RESOURCE_TAG[resource.category] ?? "bg-zinc-500"
+                      }`}
                     >
                       {resourceCategoryLabel(resource.category)}
                     </span>
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="mt-auto flex items-center justify-between gap-3 pt-6">
+                  <span className="font-mono text-xs text-muted">
                     {resource.download_count ?? 0} unduhan
                   </span>
                   <a
                     href={`/resource/${resource.id}/download`}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                    className={BTN_SM_RED}
                   >
                     Unduh
                   </a>
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

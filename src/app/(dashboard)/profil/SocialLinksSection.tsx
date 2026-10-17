@@ -45,11 +45,11 @@ export default function SocialLinksSection({
   };
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+    <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-6 dark:border-[var(--hard-border)] dark:bg-surface-2">
+      <h2 className="font-black uppercase text-lg">
         Tautan Sosial
       </h2>
-      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="mt-1 text-sm text-muted">
         Tambahkan tautan ke profil sosial atau website kamu.
       </p>
 
@@ -59,19 +59,19 @@ export default function SocialLinksSection({
           {links.map((link) => (
             <div
               key={link.id}
-              className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-700"
+              className="flex items-center justify-between rounded-btn border-[3px] border-[var(--hard-border)] px-4 py-3 dark:border-[var(--hard-border)]"
             >
               <div className="min-w-0">
-                <span className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">
+                <span className="text-xs font-medium uppercase text-muted">
                   {link.platform}
                 </span>
-                <p className="truncate text-sm text-zinc-900 dark:text-zinc-50">
+                <p className="truncate text-sm text-foreground">
                   {link.url}
                 </p>
               </div>
               <button
                 onClick={() => handleRemove(link.id)}
-                className="ml-4 shrink-0 text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                className="ml-4 shrink-0 text-sm text-accent-600 hover:text-accent-700 dark:text-accent-500 dark:hover:text-accent-300"
               >
                 Hapus
               </button>
@@ -83,7 +83,7 @@ export default function SocialLinksSection({
       {/* Add New Link Form */}
       <form action={addFormAction} className="mt-4 space-y-3">
         {addState.success === false && addState.error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+          <div className="rounded-btn border-[3px] border-[var(--hard-border)] bg-accent-700 p-3 text-sm text-white">
             {addState.error}
           </div>
         )}
@@ -93,7 +93,7 @@ export default function SocialLinksSection({
             name="platform"
             required
             defaultValue=""
-            className="w-40 shrink-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+            className="w-40 shrink-0 rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3 py-2 text-sm text-foreground focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-[var(--hard-border)] dark:bg-surface-3 dark:text-foreground"
           >
             <option value="" disabled>
               Platform
@@ -110,13 +110,13 @@ export default function SocialLinksSection({
             type="url"
             required
             placeholder="https://..."
-            className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+            className="flex-1 rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-[var(--hard-border)] dark:bg-surface-3 dark:text-foreground dark:placeholder:text-muted"
           />
 
           <button
             type="submit"
             disabled={addPending}
-            className="shrink-0 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="shrink-0 rounded-btn bg-brand-ink text-white px-4 py-2 text-sm font-medium text-white transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-3 dark:text-foreground "
           >
             {addPending ? "..." : "Tambah"}
           </button>

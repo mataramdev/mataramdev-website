@@ -6,6 +6,8 @@
  * page. Mirrors `eventStatus.ts` / `projectStatus.ts` / `postStatus.ts`.
  */
 
+import type { IconName } from "@/components/ui/icons";
+
 export const RESOURCE_CATEGORIES = ["code", "doc", "design", "video"] as const;
 
 export type ResourceCategory = (typeof RESOURCE_CATEGORIES)[number];
@@ -17,14 +19,13 @@ export const RESOURCE_CATEGORY_LABELS: Record<ResourceCategory, string> = {
   video: "Video",
 };
 
+/** Badge neo-brutalist (border 2px + warna solid), sama seperti status lain. */
 export const RESOURCE_CATEGORY_BADGE_CLASSES: Record<ResourceCategory, string> =
   {
-    code: "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300",
-    doc: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-    design:
-      "bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300",
-    video:
-      "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+    code: "border-2 border-[var(--hard-border)] bg-brand-green text-white",
+    doc: "border-2 border-[var(--hard-border)] bg-brand-blue text-white",
+    design: "border-2 border-[var(--hard-border)] bg-brand-purple text-white",
+    video: "border-2 border-[var(--hard-border)] bg-brand-orange text-white",
   };
 
 /** Used when an admin uploads a resource without picking a custom icon. */
@@ -33,6 +34,18 @@ export const RESOURCE_CATEGORY_ICONS: Record<ResourceCategory, string> = {
   doc: "📄",
   design: "🎨",
   video: "🎬",
+};
+/**
+ * Ikon SVG pengganti emoji di atas (lihat `src/components/ui/icons.tsx`).
+ * Emoji tetap didukung karena admin boleh mengisi kolom `icon` sendiri — yang
+ * diganti hanya default supaya tampilannya konsisten antar-OS dan bisa
+ * diwarnai.
+ */
+export const RESOURCE_FALLBACK_ICON: Record<ResourceCategory, IconName> = {
+  code: "code",
+  doc: "book",
+  design: "palette",
+  video: "video",
 };
 
 export function isResourceCategory(
@@ -58,4 +71,14 @@ export function resourceCategoryBadgeClasses(category: string): string {
 export function resourceIcon(category: string, icon: string | null): string {
   if (icon && icon.trim().length > 0) return icon;
   return isResourceCategory(category) ? RESOURCE_CATEGORY_ICONS[category] : "📦";
+}
+
+/**
+ * Ikon SVG bawaan kategori — dipakai hanya saat admin belum mengisi `icon`.
+ * Kategori tak dikenal memakai `package` (bawaan umum).
+ */
+export function resourceFallbackIcon(category: string): IconName {
+  return isResourceCategory(category)
+    ? RESOURCE_FALLBACK_ICON[category]
+    : "package";
 }

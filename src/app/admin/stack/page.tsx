@@ -33,10 +33,10 @@ export default async function AdminStacksPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="font-black uppercase leading-none text-2xl">
           Kelola Stack
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-muted">
           {stacks.length === 0
             ? "Belum ada stack. Form submit proyek butuh minimal satu stack."
             : `${stacks.length} stack terdaftar, ${inUse} sedang dipakai proyek.`}
@@ -46,8 +46,8 @@ export default async function AdminStacksPage() {
       <StackForm />
 
       {stacks.length === 0 ? (
-        <div className="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-zinc-500 dark:text-zinc-400">
+        <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-12 text-center dark:border-[var(--hard-border)] dark:bg-surface-2">
+          <p className="text-muted">
             Tambahkan stack pertama di atas — misalnya Next.js, Laravel, atau
             Figma.
           </p>

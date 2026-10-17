@@ -70,6 +70,9 @@ export async function toggleRsvp(
     .eq("status", "going");
 
   revalidatePath("/event");
+  // Halaman detail ikut di-segarkan supaya jumlah peserta hasil render server
+  // tidak tertinggal saat pengguna menavigasi balik ke daftar event.
+  revalidatePath("/event/[slug]", "page");
 
   const joined = existing ? existing.status !== "going" : true;
   return { success: true, data: { joined, count: count ?? 0 } };

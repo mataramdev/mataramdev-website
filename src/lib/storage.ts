@@ -9,6 +9,16 @@
 export const RESOURCE_BUCKET = "resources";
 
 /**
+ * Community branding assets (light/dark logo) — Task 9.3 / PRD §4.7. Kept in
+ * its own bucket so settings uploads never mix with user content; write access
+ * is admin-only (policies.sql section 4).
+ */
+export const SETTINGS_BUCKET = "settings";
+
+/** Cap for a single logo upload. Logos are small; this is generous on purpose. */
+export const LOGO_MAX_FILE_MB = 2;
+
+/**
  * Cap for a single resource upload. The matching Server Action body limit is
  * configured in `next.config.ts` (`serverActions.bodySizeLimit`) — raising one
  * without the other leaves uploads failing before the action ever runs.

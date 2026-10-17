@@ -1,165 +1,36 @@
-# <img src="assets/images/logo-dark.svg" width="125" style="vertical-align: middle;" /> Mataram Dev Community Profile
-
-## 🛠️ Built on HTML, CSS, JS and BITCoder AI Assistant
->
-<p align="center">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
-</p>
-
-<p align="center">
-  <a href="https://github.com/mataramdevcom/mataramdev-website/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License MIT" />
-  </a>
-  <a href="https://github.com/mataramdevcom/mataramdev-website/issues">
-    <img src="https://img.shields.io/github/issues/mataramdevcom/mataramdev-website?style=flat-square" alt="Open Issues" />
-  </a>
-  <a href="https://github.com/mataramdevcom/mataramdev-website/pulls">
-    <img src="https://img.shields.io/github/issues-pr/mataramdevcom/mataramdev-website?style=flat-square" alt="Open PRs" />
-  </a>
-  <a href="https://github.com/mataramdevcom/mataramdev-website/commits/main">
-    <img src="https://img.shields.io/github/last-commit/mataramdevcom/mataramdev-website?style=flat-square" alt="Last Commit" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://discord.gg/mataramdev" target="_blank">
-    <img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
-  </a>
-  <a href="https://t.me/mataramdevcom" target="_blank">
-    <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" />
-  </a>
-  <a href="https://instagram.com/mataramdevcom" target="_blank">
-    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" />
-  </a>
-  <a href="https://youtube.com/@mataramdevcom" target="_blank">
-    <img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" />
-  </a>
-</p>
-
-The official community website for **Mataram Dev**, a tech community of makers, designers, and developers based in Mataram, Lombok, Indonesia.
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Internationalization](#internationalization)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## Overview
-
-Mataram Dev is a growing community of tech enthusiasts, ranging from students to professional developers, who meet regularly to share knowledge, build projects, and support one another. This repository contains the source code for the community website.
-
----
-
-## Features
-
-- **About:** Community background, mission, and statistics
-- **Activities:** Overview of recurring programs (WFC, meetups, bootcamps, etc.)
-- **Projects:** Showcase of member-built open-source projects
-- **Resources:** Curated learning materials and developer toolkits
-- **Events:** Upcoming and past event listings with RSVP support
-- **Articles:** Community blog for sharing knowledge and stories
-- **Contributors:** Profiles of active community contributors
-- **Join Form:** Membership registration form backed by Supabase
-- **Dark / Light Mode:** System-aware theme toggle
-- **Bilingual Support:** English and Indonesian via JSON translation files
-
----
-
-## Project Structure
-
-```
-mataramdev-website/
-|-- assets/
-|   |-- images/          # Photos, logos, and SVG icons
-|   |-- lang/
-|   |   |-- en.json      # English translations
-|   |   |-- id.json      # Indonesian translations
-|   |-- script.js        # Main application logic
-|   |-- style.css        # Global stylesheet
-|-- .env                 # Local environment variables (not committed)
-|-- .env.example         # Template for required environment variables
-|-- .gitignore
-|-- database-schema.md   # Supabase table documentation
-|-- index.html           # Main HTML entry point
-|-- CONTRIBUTING.md
-|-- CODE_OF_CONDUCT.md
-|-- SECURITY.md
-|-- LICENSE
-|-- README.md
-```
-
----
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-No build tools are required. The project is plain HTML, CSS, and JavaScript.
-
-**Option 1: Python HTTP Server**
+First, run the development server:
 
 ```bash
-python -m http.server 8000
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Then open `http://localhost:8000` in your browser.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-**Option 2: VS Code Live Server**
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Install the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension and click "Go Live" from the status bar.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-## Environment Variables
+To learn more about Next.js, take a look at the following resources:
 
-Copy `.env.example` to `.env` and fill in your Supabase credentials before running locally.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-```bash
-cp .env.example .env
-```
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-| Variable            | Description                     |
-| ------------------- | ------------------------------- |
-| `SUPABASE_URL`      | Your Supabase project URL       |
-| `SUPABASE_ANON_KEY` | Your Supabase public (anon) key |
+## Deploy on Vercel
 
-> The `.env` file is excluded from version control via `.gitignore`. Never commit real credentials.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
----
-
-## Internationalization
-
-Translation strings are stored in `assets/lang/`.
-
-| File      | Language   |
-| --------- | ---------- |
-| `en.json` | English    |
-| `id.json` | Indonesian |
-
-To add a new language, create a new JSON file following the same key structure and register it in `assets/script.js`.
-
----
-
-## Contributing
-
-Contributions are welcome and appreciated. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
-
----
-
-## License
-
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for full terms.
-
-> **Why MIT?** It is permissive, widely recognized, and allows community members to freely fork, modify, and build on the project while retaining attribution.
-
-_Let's Learn & Grow Together_ 🚀
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

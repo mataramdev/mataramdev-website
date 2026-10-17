@@ -1,9 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseEnv } from "@/lib/env";
+import { accountBlockReason, type AccountBlock } from "@/lib/accountStatus";
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+export async function updateSession(
+  request: NextRequest,
+  opts?: { requireActive?: boolean }
+) {
+  const supabaseResponse = NextResponse.next({
     request,
   });
 
@@ -32,5 +36,24 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { response: supabaseResponse, user };
+  // Supabase Auth knows nothing about `users.is_active` / `approval_status`, so
+  // a deactivated or not-yet-approved account keeps a perfectly valid session.
+  // Checked only on protected routes (`requireActive`) — public pages must not
+  // pay for an extra query per visit.
+  let blocked: AccountBlock | null = null;
+  if (user && opts?.requireActive) {
+    const { data: profile } = await supabase
+      .from("users")
+      .select("is_active, approval_status")
+      .eq("id", user.id)
+      .single();
+
+    blocked = accountBlockReason(profile);
+    if (blocked) {
+      // Best effort: revoke the refresh token too, not just drop the cookie.
+      await supabase.auth.signOut().catch(() => undefined);
+    }
+  }
+
+  return { response: supabaseResponse, user: blocked ? null : user, blocked };
 }

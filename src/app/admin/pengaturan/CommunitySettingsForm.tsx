@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateCommunitySettings } from "@/lib/actions/community";
+import { LOGO_MAX_FILE_MB } from "@/lib/storage";
 import type { ActionResult } from "@/types";
 
 interface CommunitySettingsFormProps {
@@ -11,6 +12,8 @@ interface CommunitySettingsFormProps {
     keywords: string;
     address: string;
     mapsLocation: string;
+    lightLogoUrl: string;
+    darkLogoUrl: string;
   };
 }
 
@@ -28,15 +31,15 @@ export default function CommunitySettingsForm({
   );
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-6 dark:border-[var(--hard-border)] dark:bg-surface-2">
       {state.success === false && state.error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+        <div className="mb-4 rounded-btn border-[3px] border-[var(--hard-border)] bg-accent-700 p-3 text-sm text-white">
           {state.error}
         </div>
       )}
 
       {state.success && (
-        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
+        <div className="mb-4 rounded-btn border-[3px] border-[var(--hard-border)] bg-brand-green p-3 text-sm text-white">
           Pengaturan berhasil disimpan!
         </div>
       )}
@@ -45,7 +48,7 @@ export default function CommunitySettingsForm({
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
           >
             Nama Komunitas
           </label>
@@ -55,14 +58,14 @@ export default function CommunitySettingsForm({
             type="text"
             required
             defaultValue={initialData.name}
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+            className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
         </div>
 
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
           >
             Deskripsi
           </label>
@@ -72,14 +75,14 @@ export default function CommunitySettingsForm({
             rows={3}
             defaultValue={initialData.description}
             placeholder="Tentang komunitas ini..."
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+            className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
         </div>
 
         <div>
           <label
             htmlFor="keywords"
-            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
           >
             Keywords (SEO)
           </label>
@@ -89,9 +92,9 @@ export default function CommunitySettingsForm({
             type="text"
             defaultValue={initialData.keywords}
             placeholder="developer, mataram, ntb, komunitas"
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+            className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-xs text-muted">
             Pisahkan dengan koma.
           </p>
         </div>
@@ -99,7 +102,7 @@ export default function CommunitySettingsForm({
         <div>
           <label
             htmlFor="address"
-            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
           >
             Alamat
           </label>
@@ -109,14 +112,14 @@ export default function CommunitySettingsForm({
             type="text"
             defaultValue={initialData.address}
             placeholder="Kota Mataram, NTB"
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+            className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
         </div>
 
         <div>
           <label
             htmlFor="mapsLocation"
-            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
           >
             Lokasi Google Maps (URL embed)
           </label>
@@ -126,15 +129,86 @@ export default function CommunitySettingsForm({
             type="url"
             defaultValue={initialData.mapsLocation}
             placeholder="https://www.google.com/maps/embed?..."
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+            className="mt-1 block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent-500"
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="border-t border-[var(--hard-border)] pt-4 dark:border-[var(--hard-border)]">
+          <h2 className="font-black uppercase text-sm">
+            Logo Komunitas
+          </h2>
+          <p className="mt-1 text-xs text-muted">
+            Logo ini tampil di Navbar dan Footer. Unggah versi terang dan gelap
+            supaya terbaca di kedua tema; kalau dikosongkan, teks nama
+            komunitas yang dipakai. Maksimal {LOGO_MAX_FILE_MB}MB per gambar.
+          </p>
+
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+            {(
+              [
+                {
+                  key: "lightLogo",
+                  removeKey: "removeLightLogo",
+                  label: "Logo tema terang",
+                  currentUrl: initialData.lightLogoUrl,
+                },
+                {
+                  key: "darkLogo",
+                  removeKey: "removeDarkLogo",
+                  label: "Logo tema gelap",
+                  currentUrl: initialData.darkLogoUrl,
+                },
+              ] as const
+            ).map((logo) => (
+              <div key={logo.key}>
+                <label
+                  htmlFor={logo.key}
+                  className="block font-mono text-xs font-bold uppercase tracking-wide text-foreground"
+                >
+                  {logo.label}
+                </label>
+
+                {logo.currentUrl && (
+                  <div className="mt-2 flex items-center gap-3 rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-3 p-2 dark:border-[var(--hard-border)] dark:bg-surface-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={logo.currentUrl}
+                      alt={`Pratinjau ${logo.label}`}
+                      className="h-10 max-w-[160px] object-contain"
+                    />
+                    <label className="flex items-center gap-1.5 text-xs text-muted">
+                      <input
+                        type="checkbox"
+                        name={logo.removeKey}
+                        className="h-3.5 w-3.5 rounded border-[var(--hard-border)]"
+                      />
+                      Hapus logo ini
+                    </label>
+                  </div>
+                )}
+
+                <input
+                  id={logo.key}
+                  name={logo.key}
+                  type="file"
+                  accept="image/*"
+                  className="mt-2 block w-full text-sm text-muted file:mr-4 file:rounded-btn file:border-0 file:bg-brand-yellow file:px-4 file:py-2 file:text-sm file:font-medium file:text-black hover:file:bg-accent-500  hover:file:text-white"
+                />
+                {logo.currentUrl && (
+                  <p className="mt-1 text-xs text-muted">
+                    Biarkan kosong untuk mempertahankan logo saat ini.
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-end border-t border-[var(--hard-border)] pt-4 dark:border-[var(--hard-border)]">
           <button
             type="submit"
             disabled={pending}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-zinc-900"
+            className="rounded-btn bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-background"
           >
             {pending ? "Menyimpan..." : "Simpan Pengaturan"}
           </button>

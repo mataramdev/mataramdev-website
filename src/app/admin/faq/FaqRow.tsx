@@ -60,25 +60,25 @@ export default function FaqRow({
   };
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex flex-col gap-2 rounded-card border-[3px] border-[var(--hard-border)] bg-surface-2 p-4 dark:border-[var(--hard-border)] dark:bg-surface-2">
       <div className="flex items-start gap-3">
         <div className="flex shrink-0 flex-col items-center gap-0.5 pt-0.5">
           <button
             onClick={() => run(() => moveFaqItem(id, "up"))}
             disabled={isPending || isFirst}
             aria-label="Naikkan urutan"
-            className="rounded border border-zinc-200 px-1.5 text-xs text-zinc-600 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-30 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded border-[3px] border-[var(--hard-border)] px-1.5 text-xs text-muted transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-30 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
           >
             ▲
           </button>
-          <span className="text-xs tabular-nums text-zinc-400 dark:text-zinc-500">
+          <span className="text-xs tabular-nums text-muted">
             {position + 1}
           </span>
           <button
             onClick={() => run(() => moveFaqItem(id, "down"))}
             disabled={isPending || isLast}
             aria-label="Turunkan urutan"
-            className="rounded border border-zinc-200 px-1.5 text-xs text-zinc-600 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-30 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded border-[3px] border-[var(--hard-border)] px-1.5 text-xs text-muted transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-30 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
           >
             ▼
           </button>
@@ -94,7 +94,7 @@ export default function FaqRow({
                 minLength={5}
                 maxLength={300}
                 autoFocus
-                className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+                className="block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3 py-2 text-sm font-medium text-foreground focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-[var(--hard-border)] dark:bg-surface-3 dark:text-foreground"
               />
               <textarea
                 value={draftAnswer}
@@ -103,15 +103,15 @@ export default function FaqRow({
                 rows={4}
                 minLength={5}
                 maxLength={5000}
-                className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+                className="block w-full rounded-btn border-[3px] border-[var(--hard-border)] bg-surface-2 px-3 py-2 text-sm text-foreground focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-[var(--hard-border)] dark:bg-surface-3 dark:text-foreground"
               />
             </div>
           ) : (
             <>
-              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+              <p className="text-sm font-medium text-foreground">
                 {question}
               </p>
-              <p className="mt-1 line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 line-clamp-2 text-sm text-muted">
                 {answer}
               </p>
             </>
@@ -124,14 +124,14 @@ export default function FaqRow({
               <button
                 onClick={save}
                 disabled={isPending}
-                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-btn bg-accent-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isPending ? "..." : "Simpan"}
               </button>
               <button
                 onClick={cancelEdit}
                 disabled={isPending}
-                className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
               >
                 Batal
               </button>
@@ -140,7 +140,7 @@ export default function FaqRow({
             <button
               onClick={() => setIsEditing(true)}
               disabled={isPending}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="rounded-btn border-[3px] border-[var(--hard-border)] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[var(--hard-border)] dark:text-foreground dark:hover:bg-surface-3"
             >
               Ubah
             </button>
@@ -149,7 +149,7 @@ export default function FaqRow({
           <button
             onClick={remove}
             disabled={isPending}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+            className="rounded-btn border border-accent-500 px-3 py-1.5 text-xs font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-accent-700 dark:text-accent-500 dark:hover:bg-accent-950"
           >
             {isPending ? "..." : "Hapus"}
           </button>
@@ -157,7 +157,7 @@ export default function FaqRow({
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-xs text-accent-600 dark:text-accent-400">{error}</p>
       )}
     </div>
   );
